@@ -12,6 +12,7 @@
 
 class Cylinder {
 public:
+    int key;
     int base;
     int height;
     double GetVolume() const;

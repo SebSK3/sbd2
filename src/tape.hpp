@@ -20,7 +20,7 @@ public:
 
     Cylinder *getCurrentRecord();
     Cylinder *next();
-    void add(int base, int height);
+    void add(int key, int base, int height);
     void save();
     bool load();
     void resetFile();

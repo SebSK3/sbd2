@@ -30,21 +30,26 @@ bool Tape::load() {
 
     loads++;
     std::string builder;
-    bool isBase = true;
+    bool isBase = false, isIndex = true;
     current_record = 0;
     auto readRecords = std::min(PAGE_SIZE + 1, readBytes + 1);
-    int base, height;
+    int key, base, height;
     for (int i = 1; i < readRecords; i++) {
         builder += bytes[i - 1];
-        if (i % BASE_LENGTH == 0 && isBase) {
+        if (i % KEY_LENGTH == 0 && isIndex) {
+            key = std::stoi(builder);
+            builder = "";
+            isIndex = false;
+            isBase = true;
+        } else if (i % BASE_LENGTH == 0 && isBase) {
             base = std::stoi(builder);
             builder = "";
             isBase = false;
-        } else if (i % HEIGHT_LENGTH == 0 && !isBase) {
+        } else if (i % HEIGHT_LENGTH == 0) {
             height = std::stoi(builder);
             builder = "";
-            isBase = true;
-            add(base, height);
+            isIndex = true;
+            add(key, base, height);
         }
     }
 
@@ -53,10 +58,11 @@ bool Tape::load() {
     return true;
 }
 
-void Tape::add(int base, int height) {
+void Tape::add(int key, int base, int height) {
     if (page[current_record]->exists())
         current_record++;
     fullPageHandler(true, false);
+    page[current_record]->key = key;
     page[current_record]->base = base;
     page[current_record]->height = height;
 }
@@ -161,7 +167,7 @@ void Tape::dumpToFile() {
     load();
     Cylinder *cyl = page[current_record];
     while (!isAtFileEnd()) {
-        tempTape->add(cyl->base, cyl->height);
+        tempTape->add(cyl->key, cyl->base, cyl->height);
         cyl = next();
     }
     tempTape->save();

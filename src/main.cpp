@@ -25,10 +25,14 @@ void help() {
 int main() {
     helpers::clearFiles();
     Tape *mainTape = new Tape(TAPE_NAME);
+    Tape *debugTape = new Tape("DEBUG_TAPE.txt");
+    debugTape->load();
 
-    std::srand(static_cast<unsigned int>(std::time(0)));
-    help();
-    std::string input;
+    // std::srand(static_cast<unsigned int>(std::time(0)));
+    // help();
+    // std::string input;
 
+    delete mainTape;
+    delete debugTape;
     return 0;
 }

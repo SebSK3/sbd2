@@ -73,6 +73,10 @@
         "set": "cpp",
         "numeric": "cpp",
         "__split_buffer": "cpp",
-        "execution": "cpp"
+        "execution": "cpp",
+        "chrono": "cpp",
+        "__assert": "cpp",
+        "__availability": "cpp",
+        "__config": "cpp"
     }
 }
