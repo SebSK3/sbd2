@@ -54,14 +54,14 @@ Main Tape file:
 | File offset | Key | Data | Pointer |
 |-------------|:---:|:----:|:-------:|
 | Page 1      |     |      |         |
-| #1           |  1  |  ... |         |
+| #1           |  1  |  ... |   7      |
 | #2           |  5  |  ... |  EMPTY       |
-| #3           |  6  |  ... |         |
+| #3           |  6  |  ... |    EMPTY     |
 | Page 2      |     |      |         |
 | #4           | 8   | ...  |  EMPTY       |
-| #5           | 11  | ...  |         |
-| #6           | EMPTY  | ...  |         |
-| Page 3      |     |      |         |
+| #5           | 11  | ...  |   EMPTY      |
+| #6           | EMPTY  | ...  |    EMPTY     |
+| Page 3      |     |      |  EMPTY       |
 | #7           | 16   | ...  |    EMPTY     |
 | #8           | 19  | ...  |  EMPTY       |
 | #9           | 20  | ...  |    EMPTY     |
