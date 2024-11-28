@@ -4,7 +4,7 @@ and call it a day
 
 Every page in main_tape has it's own overflow page.
 
-Every record in this page can point to key that should be after it.
+Every record can point to key that should be after it.
 
 When we insert, we search for the predecessor of searched key.
 If we can't insert it directly after predecessor, then we insert it in **overflow chain**.
