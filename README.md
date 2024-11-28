@@ -28,12 +28,12 @@ In `index.txt`:
 
 In `main_tape.txt`:
 
-| 4 Bytes | 4 Bytes | 4 Bytes | 4 Byte |
+| 4 Bytes | 4 Bytes | 4 Bytes | 4 Bytes |
 | :-: | :-: | :-: | :-: |
 | Key (int) | Base (int) | Height (int) | OverflowPointer (int) |
 
 In `overflow.txt`:
 
-| 4 Bytes | 4 Bytes | 4 Bytes | 4 Byte |
+| 4 Bytes | 4 Bytes | 4 Bytes | 4 Bytes |
 | :-: | :-: | :-: | :-: |
 | Key (int) | Base (int) | Height (int) | OverflowPointer (int) |
