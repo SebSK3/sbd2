@@ -11,7 +11,8 @@ const uint HEIGHT_LENGTH = 4;
 const uint PAGE_NUMBER_LENGTH = 4;
 const uint KEY_LENGTH = 4;
 
-const uint RECORD_SIZE = KEY_LENGTH + BASE_LENGTH + HEIGHT_LENGTH;
+// 
+const uint RECORD_SIZE = KEY_LENGTH + BASE_LENGTH + HEIGHT_LENGTH + PAGE_NUMBER_LENGTH;
 
 // For this to work, PAGE_SIZE needs to be at least the size of RECORD_COUNT
 const long PAGE_SIZE = 120;
