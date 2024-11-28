@@ -1,6 +1,7 @@
 don't really want to think much about it, gonna just copy sbd1 project
 and call it a day
 
+Index file has indexes of first elements of pages in main_tape.
 
 Every page in main_tape has it's own overflow page.
 
