@@ -7,7 +7,7 @@ Every page in main_tape has it's own overflow page.
 Every record in this page can point to key that should be after it.
 
 When we insert, we search for the predecessor of searched key.
-If we don't cant insert it directly after predecessor, then we insert it in **overflow chain**.
+If we can't insert it directly after predecessor, then we insert it in **overflow chain**.
 When we find it impossible to insert in overflow chain, we reorganise the file.
 
 **Overflow chain** has records and pointers to next overflow pointer. The overflow pointer in overflow page can be only within the same overflow page. We treat is somewhat like linked list.
