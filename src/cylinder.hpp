@@ -20,6 +20,7 @@ public:
     bool exists();
     void clear();
 
+    std::string serializeKey();
     std::string serializeBase();
     std::string serializeHeight();
 
@@ -46,6 +47,7 @@ public:
 
     Cylinder &operator=(const Cylinder &other) {
         if (this != &other) {
+            key = other.key;
             height = other.height;
             base = other.base;
         }
@@ -53,7 +55,7 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Cylinder &cyl) {
-        os << cyl.GetVolume();
+        os << cyl.key;
         return os;
     }
 };

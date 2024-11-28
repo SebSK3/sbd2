@@ -79,6 +79,7 @@ void Tape::save() {
     file.seekg(current_page * PAGE_SIZE);
     for (int i = 0; i < PAGE_RECORDS; i++) {
         if (page[i]->exists()) {
+            file.write(page[i]->serializeKey().c_str(), KEY_LENGTH);
             file.write(page[i]->serializeBase().c_str(), BASE_LENGTH);
             file.write(page[i]->serializeHeight().c_str(), HEIGHT_LENGTH);
         }

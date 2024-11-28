@@ -27,6 +27,15 @@ int main() {
     Tape *mainTape = new Tape(TAPE_NAME);
     Tape *debugTape = new Tape("DEBUG_TAPE.txt");
     debugTape->load();
+    Cylinder *cyl = new Cylinder();
+    cyl->clear();
+    *cyl = *debugTape->getCurrentRecord();
+    while (!debugTape->isAtFileEnd()) {
+        mainTape->add(cyl->key, cyl->base, cyl->height);
+        *cyl = *debugTape->next();
+    }
+    delete cyl;
+    mainTape->save();
 
     // std::srand(static_cast<unsigned int>(std::time(0)));
     // help();

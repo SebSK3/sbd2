@@ -10,6 +10,12 @@ void Cylinder::clear() {
     height = 0;
 }
 
+std::string Cylinder::serializeKey() {
+    std::ostringstream oss;
+    oss << std::setw(KEY_LENGTH) << std::setfill('0') << key;
+    return oss.str();
+}
+
 std::string Cylinder::serializeBase() {
     std::ostringstream oss;
     oss << std::setw(BASE_LENGTH) << std::setfill('0') << base;
