@@ -12,7 +12,7 @@ When we insert, we search for the predecessor of searched key.
 If we can't insert it directly after predecessor, then we insert it in **overflow chain**.
 When we find it impossible to insert in overflow chain, we reorganise the file.
 
-**Overflow chain** has records and pointers to next overflow pointer. The overflow pointer in overflow page can be only within the same overflow page. We treat is somewhat like linked list.
+**Overflow chain** has records and pointers to next overflow pointer. The overflow pointer in overflow page can be only within the same overflow page. We treat it somewhat like linked list.
 
 
 My idea for this is creating three files:
