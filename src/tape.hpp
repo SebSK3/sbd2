@@ -40,7 +40,7 @@ private:
     std::fstream file;
     uint current_record = 0;
     uint current_page = 0;
-    Cylinder *page[TAPE_SIZE];
+    Cylinder *page[PAGE_RECORDS];
     bool fullPageHandler(bool shouldSave = false, bool shouldLoad = true);
     bool isFull();
 };
