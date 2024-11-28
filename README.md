@@ -15,9 +15,7 @@ When we find it impossible to insert in overflow chain, we reorganise the file.
 **Overflow chain** has records and pointers to next overflow pointer. The overflow pointer in overflow page can be only within the same overflow page. We treat is somewhat like linked list.
 
 
-My way to handle overflow area:
-
-Three files:
+My idea for this is creating three files:
 - index.txt
 - main_tape.txt
 - overflow.txt
