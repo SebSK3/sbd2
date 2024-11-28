@@ -37,3 +37,53 @@ In `overflow.txt`:
 | 4 Bytes | 4 Bytes | 4 Bytes | 4 Bytes |
 | :-: | :-: | :-: | :-: |
 | Key (int) | Base (int) | Height (int) | OverflowPointer (int) |
+
+Example where page size is of 3 records:
+
+Index file:
+
+| File offset | Page | Key |
+|-------------|------|-----|
+| #1          | 1    | 1   |
+| #2          | 2    | 4   |
+| #2          | 3    | 16   |
+
+
+Main Tape file:
+
+| File offset | Key | Data | Pointer |
+|-------------|:---:|:----:|:-------:|
+| Page 1      |     |      |         |
+| #1           |  1  |  ... |         |
+| #2           |  5  |  ... |  EMPTY       |
+| #3           |  6  |  ... |         |
+| Page 2      |     |      |         |
+| #4           | 8   | ...  |  EMPTY       |
+| #5           | 11  | ...  |         |
+| #6           | EMPTY  | ...  |         |
+| Page 3      |     |      |         |
+| #7           | 16   | ...  |    EMPTY     |
+| #8           | 19  | ...  |  EMPTY       |
+| #9           | 20  | ...  |    EMPTY     |
+
+Overflow file:
+
+| File offset | Key | Data | Pointer |
+|-------------|:---:|:----:|:-------:|
+| Page 1      |     |      |         |
+| #1           |  EMPTY  |  ... |         |
+| #2           |  EMPTY  |  ... |         |
+| #3           |  EMPTY  |  ... |         |
+| Page 2      |     |      |         |
+| #4           | EMPTY   | ...  |         |
+| #5           | EMPTY  | ...  |         |
+| #6           | EMPTY  | ...  |         |
+| Page 3      |     |      |         |
+| #7           | 2   | ...  |         |
+| #8           | EMPTY  | ...  |         |
+| #9           | EMPTY  | ...  |         |
+
+You may ask why #6 in main tape file is empty, 
+I will say to you I have absolutely no idea,
+but it's somewhat like this in Dominik Lau's pdf raport.
+I may come back with explanation in future commits.
