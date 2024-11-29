@@ -28,15 +28,15 @@ In `index.txt`:
 
 In `main_tape.txt`:
 
-| 4 Bytes | 4 Bytes | 4 Bytes | 4 Bytes |
+| 4 Bytes | X Bytes | 4 Bytes |
 | :-: | :-: | :-: | :-: |
-| Key (int) | Base (int) | Height (int) | OverflowPointer (int) |
+| Key (int) | YOUR DATA | OverflowPointer (int) |
 
 In `overflow.txt`:
 
-| 4 Bytes | 4 Bytes | 4 Bytes | 4 Bytes |
+| 4 Bytes | X Bytes | 4 Bytes |
 | :-: | :-: | :-: | :-: |
-| Key (int) | Base (int) | Height (int) | OverflowPointer (int) |
+| Key (int) | YOUR DATA | OverflowPointer (int) |
 
 Example where page size is of 3 records:
 
@@ -71,19 +71,20 @@ Overflow file:
 | File offset | Key | Data | Pointer |
 |-------------|:---:|:----:|:-------:|
 | Page 1      |     |      |         |
-| #1           |  EMPTY  |  ... |         |
-| #2           |  EMPTY  |  ... |         |
-| #3           |  EMPTY  |  ... |         |
+| #1           |  EMPTY  |  ... |    EMPTY     |
+| #2           |  EMPTY  |  ... |   EMPTY      |
+| #3           |  EMPTY  |  ... |   EMPTY      |
 | Page 2      |     |      |         |
-| #4           | EMPTY   | ...  |         |
-| #5           | EMPTY  | ...  |         |
-| #6           | EMPTY  | ...  |         |
+| #4           | 3   | ...  |    8     |
+| #5           | EMPTY  | ...  |  EMPTY       |
+| #6           | EMPTY  | ...  |     EMPTY    |
 | Page 3      |     |      |         |
-| #7           | 2   | ...  |         |
-| #8           | EMPTY  | ...  |         |
-| #9           | EMPTY  | ...  |         |
+| #7           | 2   | ...  |   4      |
+| #8           | EMPTY  | ...  |   EMPTY      |
+| #9           | 4  | ...  |    EMPTY     |
 
-You may ask why #6 in main tape file is empty, 
+You may ask why #6 in main tape file is empty,
 I will say to you I have absolutely no idea,
 but it's somewhat like this in Dominik Lau's pdf raport.
 I may come back with explanation in future commits.
+It may have to do with reorganisation.
