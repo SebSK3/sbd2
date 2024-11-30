@@ -41,22 +41,22 @@ int main() {
     delete cyl;
     mainTape->save();
     // index->save();
-    std::pair<Cylinder*, Position> found = index->find(11);
+    std::pair<Cylinder*, Position> found = index->find(7);
     std::cout << "Place: ";
     std::cout << found.second.page << " : " << found.second.index << std::endl;
     if (found.first != nullptr) {
         std::cout << "FOUND" << std::endl;
     }
-    Cylinder cyl2;
-    cyl2.key = 3;
-    cyl2.base = 3;
-    cyl2.height = 3;
-    cyl2.pointer = 0;
-    index->insert(&cyl2);
-    cyl2.key = 4;
-    cyl2.base = 4;
-    cyl2.height = 4;
-    index->insert(&cyl2);
+    // Cylinder cyl2;
+    // cyl2.key = 7;
+    // cyl2.base = 7;
+    // cyl2.height = 7;
+    // cyl2.pointer = 0;
+    // index->insert(&cyl2);
+    // cyl2.key = 4;
+    // cyl2.base = 4;
+    // cyl2.height = 4;
+    // index->insert(&cyl2);
     delete mainTape;
     delete index;
     delete overflowTape;

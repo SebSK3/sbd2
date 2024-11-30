@@ -161,23 +161,28 @@ std::pair<Cylinder *, Position> Tape::get(int key, int pointer) {
 void Tape::insert(Cylinder *cyl) {
     int key = cyl->key;
     Cylinder *record = page[current_record];
-    Cylinder lastRecord = *record;
+    Cylinder *lastRecord = record;
     Position pos;
     pos.page = current_page;
     pos.index = current_record;
 
     while (true) {
-        if (lastRecord.key == key || record->key == key) {
+        if (lastRecord->key == key || record->key == key) {
                 std::cout << "[ERROR] KEY ALREADY IN DATABASE" << std::endl;
                 return;
         }
-        if (lastRecord.key <= key && (!record->exists() || key < record->key)) {
-            if (lastRecord.pointer != 0) {
-
+        if (lastRecord->key <= key && (!record->exists() || key < record->key)) {
+#ifdef DEBUG
+            std::cout << "[TAPE] Found predecessor at page: " << pos.page << " position: " << pos.index << std::endl;
+#endif
+            if (lastRecord->pointer != 0) {
+#ifdef DEBUG
+                std::cout << "[TAPE] Moving into chain..." << std::endl;
+#endif
+                overflow->insertAtOverflow(lastRecord->pointer, cyl);
             } else {
 #ifdef DEBUG
-                std::cout << "[TAPE] Found predecessor at page: " << pos.page << " position: " << pos.index << std::endl;
-                std::cout << "Trying to insert in main tape..." << std::endl;
+                std::cout << "[TAPE] Trying to insert in main tape..." << std::endl;
 #endif
                 if (!record->exists()) {
                     *record = *cyl;
@@ -186,7 +191,7 @@ void Tape::insert(Cylinder *cyl) {
                 }
             }
         }
-        lastRecord = *record;
+        lastRecord = record;
         pos.page = current_page;
         pos.index = current_record;
         if (isAtPageEnd()) break;
@@ -194,11 +199,43 @@ void Tape::insert(Cylinder *cyl) {
     }
 }
 
+void Tape::insertAtOverflow(int pointer, Cylinder *cyl) {
+    int current_pointer = pointer;
+    loadPage(pointerToPage(current_pointer));
+    current_record = pointerToOffset(current_pointer);
+    Cylinder lastRecord = *page[current_record];
+    Cylinder *record = page[current_record];
+    while (record->exists() && record->pointer != 0 && record->key < cyl->key) {
+        current_pointer = page[current_record]->pointer;
+        if (current_page != pointerToPage(current_pointer)) {
+            loadPage(pointerToPage(current_pointer));
+        }
+        lastRecord = *record;
+        current_record = pointerToOffset(current_pointer);
+        record = page[current_record];
+    }
+
+    // TODO: remember last page number
+    while (!isAtFileEnd()) {
+        next();
+    }
+    // TODO: REPLACE CHAIN
+    add(cyl->key, cyl->base, cyl->height, 0);
+    int appended_pointer = (current_record + (PAGE_RECORDS * current_page))+1;
+    save(false);
+    if (current_page != pointerToPage(current_pointer)) {
+        loadPage(pointerToPage(current_pointer));
+    }
+    current_record = pointerToOffset(current_pointer);
+    page[current_record]->pointer = appended_pointer;
+    save();
+}
+
 bool Tape::isAtPageEnd() {
     return current_record == PAGE_RECORDS-1;
 }
 
-void Tape::save() {
+void Tape::save(bool shouldClear) {
     file.open(name);
     saves++;
     file.seekg(current_page * PAGE_SIZE);
@@ -209,6 +246,7 @@ void Tape::save() {
             file.write(page[i]->serializeHeight().c_str(), HEIGHT_LENGTH);
             file.write(page[i]->serializePointer().c_str(), POINTER_LENGTH);
         }
+        if (shouldClear)
         page[i]->clear();
     }
     file.close();

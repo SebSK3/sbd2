@@ -26,7 +26,7 @@ public:
     std::pair<Cylinder*, Position> find(int key);
     Cylinder *next();
     void add(int key, int base, int height, int pointer);
-    void save();
+    void save(bool shouldClear = true);
     bool load();
     bool loadPage(int page);
     void resetFile();
@@ -45,6 +45,7 @@ public:
 private:
     Tape *overflow;
     std::pair<Cylinder*, Position> get(int key, int pointer);
+    void insertAtOverflow(int pointer, Cylinder *cyl);
     int pointerToPage(int pointer);
     int pointerToOffset(int pointer);
     bool isAtPageEnd();
