@@ -6,8 +6,8 @@ void helpers::clearFiles() {
     file.close();
     // file.open(INDEX_NAME, std::ofstream::out | std::ofstream::trunc);
     // file.close();
-    file.open(OVERFLOW_NAME, std::ofstream::out | std::ofstream::trunc);
-    file.close();
+    // file.open(OVERFLOW_NAME, std::ofstream::out | std::ofstream::trunc);
+    // file.close();
 }
 
 std::string helpers::serializeKey(int pointer) {

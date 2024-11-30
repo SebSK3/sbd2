@@ -42,6 +42,9 @@ public:
 
 private:
     Tape *overflow;
+    std::pair<Cylinder*, Position> get(int key, int pointer);
+    int pointerToPage(int pointer);
+    int pointerToOffset(int pointer);
     std::fstream file;
     uint current_record = 0;
     uint current_page = 0;

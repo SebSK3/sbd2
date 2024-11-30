@@ -26,6 +26,7 @@ int main() {
     helpers::clearFiles();
     Tape *overflowTape = new Tape(OVERFLOW_NAME);
     Tape *mainTape = new Tape(TAPE_NAME);
+    mainTape->loadOverflow(overflowTape);
     Tape *debugTape = new Tape("DEBUG_TAPE.txt");
     Index *index = new Index(INDEX_NAME, mainTape);
     debugTape->load();
@@ -40,7 +41,7 @@ int main() {
     delete cyl;
     mainTape->save();
     // index->save();
-    index->find(9);
+    index->find(5);
     delete mainTape;
     delete index;
     delete overflowTape;

@@ -29,7 +29,7 @@ void Index::find(int key) {
     index_t *record = page[current_record];
     index_t lastRecord = *record;
     while (!isAtFileEnd()) {
-        if (lastRecord.key > key && record->key < key) {
+        if (lastRecord.key <= key && key < record->key) {
             break;
         }
         lastRecord = *record;
