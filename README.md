@@ -38,7 +38,9 @@ In `overflow.txt`:
 | :-: | :-: | :-: | :-: |
 | Key (int) | YOUR DATA | OverflowPointer (int) |
 
-Example where page size is of 3 records:
+Below is example, where page size is of 3 records. This example can't really happen
+in real scenario, but it is there to visualize there being no restrictions
+on pointer placement.
 
 Index file:
 
