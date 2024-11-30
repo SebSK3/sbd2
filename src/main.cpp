@@ -39,7 +39,7 @@ int main() {
     delete cyl;
     mainTape->save();
     index->save();
-    std::pair<Cylinder*, Position> found = mainTape->find(3);
+    std::pair<Cylinder*, Position> found = mainTape->find(9);
     std::cout << "Found at page: " << found.second.page << " position: " << found.second.index << std::endl;
     delete mainTape;
     delete index;
