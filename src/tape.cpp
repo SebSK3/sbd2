@@ -139,6 +139,7 @@ std::pair<Cylinder *, Position> Tape::get(int key, int pointer) {
     Position pos;
     pos.page = current_page;
     pos.index = current_record;
+    // TODO: if record doesn't exist do something nice
     while (page[current_record]->key != 0 && key != page[current_record]->key) {
         current_pointer = page[current_record]->pointer;
         if (current_page != pointerToPage(current_pointer))
