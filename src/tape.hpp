@@ -15,6 +15,7 @@ class Tape {
 public:
     Tape(std::string name);
     ~Tape();
+    void loadOverflow(Tape *overflow);
     std::string name;
     uint loads;
     uint saves;
@@ -40,6 +41,7 @@ public:
 #endif
 
 private:
+    Tape *overflow;
     std::fstream file;
     uint current_record = 0;
     uint current_page = 0;

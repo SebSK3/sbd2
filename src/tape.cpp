@@ -16,6 +16,11 @@ Tape::~Tape() {
     }
 }
 
+
+void Tape::loadOverflow(Tape *overflow) {
+    this->overflow = overflow;
+}
+
 bool Tape::load() {
     resetTape();
     file.open(name, std::ios::in);
@@ -86,22 +91,25 @@ bool Tape::loadPage(int page) {
 }
 
 std::pair<Cylinder*, Position> Tape::find(int key) {
-    goToStart(); // TODO: temporary
     Cylinder *record = page[current_record];
+    Cylinder lastRecord = *record;
     Position pos;
     pos.page = current_page;
     pos.index = current_record;
 
     while (!isAtFileEnd()) {
-        if (record->key == key) {
+        if (lastRecord.key <= key && key < record->key) {
+            if (lastRecord.key == key) {
 #ifdef DEBUG
-            std::cout << "Found at page: " << pos.page << " position: " << pos.index << std::endl;
+                std::cout << "Found at page: " << pos.page << " position: " << pos.index << std::endl;
 #endif
-            return {record, pos};
+                return {record, pos};
+            }
         }
-        record = next();
+        lastRecord = *record;
         pos.page = current_page;
         pos.index = current_record;
+        record = next();
     }
     return {nullptr, pos};
 }
