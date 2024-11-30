@@ -47,6 +47,16 @@ int main() {
     if (found.first != nullptr) {
         std::cout << "FOUND" << std::endl;
     }
+    Cylinder cyl2;
+    cyl2.key = 3;
+    cyl2.base = 3;
+    cyl2.height = 3;
+    cyl2.pointer = 0;
+    index->insert(&cyl2);
+    cyl2.key = 4;
+    cyl2.base = 4;
+    cyl2.height = 4;
+    index->insert(&cyl2);
     delete mainTape;
     delete index;
     delete overflowTape;

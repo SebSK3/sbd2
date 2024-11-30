@@ -159,7 +159,39 @@ std::pair<Cylinder *, Position> Tape::get(int key, int pointer) {
 }
 
 void Tape::insert(Cylinder *cyl) {
+    int key = cyl->key;
+    Cylinder *record = page[current_record];
+    Cylinder lastRecord = *record;
+    Position pos;
+    pos.page = current_page;
+    pos.index = current_record;
 
+    while (true) {
+        if (lastRecord.key == key || record->key == key) {
+                std::cout << "[ERROR] KEY ALREADY IN DATABASE" << std::endl;
+                return;
+        }
+        if (lastRecord.key <= key && (!record->exists() || key < record->key)) {
+            if (lastRecord.pointer != 0) {
+
+            } else {
+#ifdef DEBUG
+                std::cout << "[TAPE] Found predecessor at page: " << pos.page << " position: " << pos.index << std::endl;
+                std::cout << "Trying to insert in main tape..." << std::endl;
+#endif
+                if (!record->exists()) {
+                    *record = *cyl;
+                    save();
+                    return;
+                }
+            }
+        }
+        lastRecord = *record;
+        pos.page = current_page;
+        pos.index = current_record;
+        if (isAtPageEnd()) break;
+        record = next();
+    }
 }
 
 bool Tape::isAtPageEnd() {
