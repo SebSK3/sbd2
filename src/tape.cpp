@@ -16,7 +16,6 @@ Tape::~Tape() {
     }
 }
 
-
 void Tape::loadOverflow(Tape *overflow) {
     this->overflow = overflow;
 }
@@ -35,7 +34,7 @@ bool Tape::load() {
 
     loads++;
     std::string builder;
-    bool isBase = false, isHeight=false, isIndex = true;
+    bool isBase = false, isHeight = false, isIndex = true;
     current_record = 0;
     auto readRecords = std::min(PAGE_SIZE + 1, readBytes + 1);
     int key, base, height, pointer;
@@ -90,7 +89,7 @@ bool Tape::loadPage(int page) {
     return load();
 }
 
-std::pair<Cylinder*, Position> Tape::find(int key) {
+std::pair<Cylinder *, Position> Tape::find(int key) {
     Cylinder *record = page[current_record];
     Cylinder lastRecord = *record;
     Position pos;
@@ -103,7 +102,7 @@ std::pair<Cylinder*, Position> Tape::find(int key) {
 #ifdef DEBUG
                 std::cout << "[TAPE] Found at page: " << pos.page << " position: " << pos.index << std::endl;
 #endif
-                return {record, pos};
+                return { record, pos };
             } else {
                 // Key not found in main tape, find in overflow
                 if (lastRecord.pointer != 0) {
@@ -114,38 +113,57 @@ std::pair<Cylinder*, Position> Tape::find(int key) {
         lastRecord = *record;
         pos.page = current_page;
         pos.index = current_record;
+        if (isAtPageEnd()) break;
         record = next();
     }
-    return {nullptr, pos};
+    if (!record->exists() || record->key != key) {
+        record = nullptr;
+    }
+    return { record, pos };
 }
 
 int Tape::pointerToPage(int pointer) {
     // We start pointers from 1, 0 being special value: non existing pointer
-    return (pointer-1)/PAGE_RECORDS;
+    return (pointer - 1) / PAGE_RECORDS;
 }
 
 int Tape::pointerToOffset(int pointer) {
-    return (pointer-1) % PAGE_RECORDS;
+    return (pointer - 1) % PAGE_RECORDS;
 }
 
-std::pair<Cylinder*, Position> Tape::get(int key, int pointer) {
+// this finds in overflow
+std::pair<Cylinder *, Position> Tape::get(int key, int pointer) {
     int current_pointer;
     loadPage(pointerToPage(pointer));
     current_record = pointerToOffset(pointer);
     Position pos;
     pos.page = current_page;
     pos.index = current_record;
-    while (key != page[current_record]->key) {
+    while (page[current_record]->key != 0 && key != page[current_record]->key) {
         current_pointer = page[current_record]->pointer;
-        loadPage(pointerToPage(current_pointer));
+        if (current_page != pointerToPage(current_pointer))
+            loadPage(pointerToPage(current_pointer));
         current_record = pointerToOffset(current_pointer);
         pos.page = current_page;
         pos.index = current_record;
     }
+
+    if (page[current_record]->exists()) {
 #ifdef DEBUG
-    std::cout << "[OVERFLOW] Found at page: " << pos.page << " position: " << pos.index << std::endl;
+        std::cout << "[OVERFLOW] Found at page: " << pos.page << " position: " << pos.index << std::endl;
 #endif
-    return {page[current_record], pos};
+        return { page[current_record], pos };
+    } else {
+        return { nullptr, pos };
+    }
+}
+
+void Tape::insert(Cylinder *cyl) {
+
+}
+
+bool Tape::isAtPageEnd() {
+    return current_record == PAGE_RECORDS-1;
 }
 
 void Tape::save() {

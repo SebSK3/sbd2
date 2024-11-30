@@ -20,6 +20,8 @@ public:
     uint loads;
     uint saves;
 
+    void insert(Cylinder *cyl);
+
     Cylinder *getCurrentRecord();
     std::pair<Cylinder*, Position> find(int key);
     Cylinder *next();
@@ -45,9 +47,10 @@ private:
     std::pair<Cylinder*, Position> get(int key, int pointer);
     int pointerToPage(int pointer);
     int pointerToOffset(int pointer);
+    bool isAtPageEnd();
     std::fstream file;
-    uint current_record = 0;
-    uint current_page = 0;
+    int current_record = 0;
+    int current_page = 0;
     Cylinder *page[PAGE_RECORDS];
     bool fullPageHandler(bool shouldSave = false, bool shouldLoad = true);
     bool isFull();

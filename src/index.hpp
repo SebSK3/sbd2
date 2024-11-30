@@ -48,8 +48,8 @@ public:
     void save();
     bool load();
 
-    index_t *getCurrentRecord();
-    void find(int key);
+    std::pair<Cylinder*, Position> find(int key);
+    void insert(Cylinder *cyl);
     index_t *next();
     void add(int key, int page);
 private:

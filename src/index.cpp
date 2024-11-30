@@ -24,7 +24,7 @@ void Index::goToStart() {
     load();
 }
 
-void Index::find(int key) {
+std::pair<Cylinder*, Position> Index::find(int key) {
     goToStart();
     index_t *record = page[current_record];
     index_t lastRecord = *record;
@@ -39,7 +39,26 @@ void Index::find(int key) {
     std::cout << "[INDEX] Will search at page: " << lastRecord.page << std::endl;
 #endif
     tape->loadPage(lastRecord.page);
-    tape->find(key);
+    return tape->find(key);
+}
+
+void Index::insert(Cylinder *cyl) {
+    goToStart();
+    int key = cyl->key;
+    index_t *record = page[current_record];
+    index_t lastRecord = *record;
+    while (!isAtFileEnd()) {
+        if (lastRecord.key <= key && key < record->key) {
+            break;
+        }
+        lastRecord = *record;
+        record = next();
+    }
+#ifdef DEBUG
+    std::cout << "[INDEX] Will insert at page: " << lastRecord.page << std::endl;
+#endif
+    tape->loadPage(lastRecord.page);
+    tape->insert(cyl);
 }
 
 
