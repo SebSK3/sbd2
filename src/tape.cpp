@@ -79,6 +79,24 @@ Cylinder *Tape::next() {
     return page[current_record];
 }
 
+std::pair<Cylinder*, Position> Tape::find(int key) {
+    goToStart(); // TODO: temporary
+    Cylinder *record = page[current_record];
+    Position pos;
+    pos.page = current_page;
+    pos.index = current_record;
+
+    while (!isAtFileEnd()) {
+        if (record->key == key) {
+            return {record, pos};
+        }
+        record = next();
+        pos.page = current_page;
+        pos.index = current_record;
+    }
+    return {nullptr, pos};
+}
+
 void Tape::save() {
     file.open(name);
     saves++;

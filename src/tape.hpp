@@ -1,6 +1,7 @@
 #pragma once
 
 #include "consts.hpp"
+#include "helpers.hpp"
 #include "cylinder.hpp"
 
 #include <algorithm>
@@ -19,7 +20,7 @@ public:
     uint saves;
 
     Cylinder *getCurrentRecord();
-    Cylinder *find(int key);
+    std::pair<Cylinder*, Position> find(int key);
     Cylinder *next();
     void add(int key, int base, int height, int pointer);
     void save();
