@@ -15,6 +15,7 @@ public:
     int key;
     int base;
     int height;
+    int pointer;
     double GetVolume() const;
 
     bool exists();
@@ -23,6 +24,7 @@ public:
     std::string serializeKey();
     std::string serializeBase();
     std::string serializeHeight();
+    std::string serializePointer();
 
     /* Operators */
     bool operator>(const Cylinder &other) const {
@@ -50,6 +52,7 @@ public:
             key = other.key;
             height = other.height;
             base = other.base;
+            pointer = other.pointer;
         }
         return *this;
     }

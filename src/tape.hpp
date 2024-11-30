@@ -19,8 +19,9 @@ public:
     uint saves;
 
     Cylinder *getCurrentRecord();
+    Cylinder *find(int key);
     Cylinder *next();
-    void add(int key, int base, int height, bool hasOverflow = false);
+    void add(int key, int base, int height, int pointer);
     void save();
     bool load();
     void resetFile();

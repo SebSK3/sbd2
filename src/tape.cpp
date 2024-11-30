@@ -30,10 +30,10 @@ bool Tape::load() {
 
     loads++;
     std::string builder;
-    bool isBase = false, isIndex = true;
+    bool isBase = false, isHeight=false, isIndex = true;
     current_record = 0;
     auto readRecords = std::min(PAGE_SIZE + 1, readBytes + 1);
-    int key, base, height;
+    int key, base, height, pointer;
     for (int i = 1; i < readRecords; i++) {
         builder += bytes[i - 1];
         if (i % KEY_LENGTH == 0 && isIndex) {
@@ -45,11 +45,16 @@ bool Tape::load() {
             base = std::stoi(builder);
             builder = "";
             isBase = false;
-        } else if (i % HEIGHT_LENGTH == 0) {
+            isHeight = true;
+        } else if (i % HEIGHT_LENGTH == 0 && isHeight) {
             height = std::stoi(builder);
+            isHeight = false;
+            builder = "";
+        } else if (i % POINTER_LENGTH == 0) {
+            pointer = std::stoi(builder);
             builder = "";
             isIndex = true;
-            add(key, base, height);
+            add(key, base, height, pointer);
         }
     }
 
@@ -58,13 +63,14 @@ bool Tape::load() {
     return true;
 }
 
-void Tape::add(int key, int base, int height) {
+void Tape::add(int key, int base, int height, int pointer) {
     if (page[current_record]->exists())
         current_record++;
     fullPageHandler(true, false);
     page[current_record]->key = key;
     page[current_record]->base = base;
     page[current_record]->height = height;
+    page[current_record]->pointer = pointer;
 }
 
 Cylinder *Tape::next() {
@@ -82,6 +88,7 @@ void Tape::save() {
             file.write(page[i]->serializeKey().c_str(), KEY_LENGTH);
             file.write(page[i]->serializeBase().c_str(), BASE_LENGTH);
             file.write(page[i]->serializeHeight().c_str(), HEIGHT_LENGTH);
+            file.write(page[i]->serializePointer().c_str(), POINTER_LENGTH);
         }
         page[i]->clear();
     }
@@ -168,7 +175,7 @@ void Tape::dumpToFile() {
     load();
     Cylinder *cyl = page[current_record];
     while (!isAtFileEnd()) {
-        tempTape->add(cyl->key, cyl->base, cyl->height);
+        tempTape->add(cyl->key, cyl->base, cyl->height, cyl->pointer);
         cyl = next();
     }
     tempTape->save();
