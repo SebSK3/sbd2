@@ -3,6 +3,7 @@
 #include "consts.hpp"
 #include "helpers.hpp"
 #include "cylinder.hpp"
+#include "tape.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -17,17 +18,29 @@ struct index_t {
         key = 0;
     }
     bool exists() {
-        return page != 0 && key != 0;
+        return key != 0;
+    }
+
+    index_t& operator=(const index_t& other) {
+        if (this == &other) {
+            return *this;
+        }
+
+        this->key = other.key;
+        this->page = other.page;
+
+        return *this;
     }
 };
 
 class Index {
 public:
-    Index(std::string name);
+    Index(std::string name, Tape *tape);
     ~Index();
     std::string name;
     uint loads;
     uint saves;
+    Tape *tape;
 
     void resetTape();
     void resetPage();
@@ -36,7 +49,7 @@ public:
     bool load();
 
     index_t *getCurrentRecord();
-    index_t *find(int key);
+    void find(int key);
     index_t *next();
     void add(int key, int page);
 private:
@@ -45,5 +58,7 @@ private:
     uint current_page = 0;
     index_t *page[PAGE_RECORDS_INDEX];
     bool fullPageHandler(bool shouldSave = false, bool shouldLoad = true);
+    bool isAtFileEnd();
     bool isFull();
+    void goToStart();
 };

@@ -79,6 +79,12 @@ Cylinder *Tape::next() {
     return page[current_record];
 }
 
+bool Tape::loadPage(int page) {
+    current_page = page;
+    current_record = 0;
+    return load();
+}
+
 std::pair<Cylinder*, Position> Tape::find(int key) {
     goToStart(); // TODO: temporary
     Cylinder *record = page[current_record];
@@ -88,6 +94,9 @@ std::pair<Cylinder*, Position> Tape::find(int key) {
 
     while (!isAtFileEnd()) {
         if (record->key == key) {
+#ifdef DEBUG
+            std::cout << "Found at page: " << pos.page << " position: " << pos.index << std::endl;
+#endif
             return {record, pos};
         }
         record = next();

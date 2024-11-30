@@ -25,6 +25,7 @@ public:
     void add(int key, int base, int height, int pointer);
     void save();
     bool load();
+    bool loadPage(int page);
     void resetFile();
     void resetTape();
     void resetPage();

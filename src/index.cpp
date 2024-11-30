@@ -1,10 +1,11 @@
 #include "index.hpp"
 
 
-Index::Index(std::string name) {
+Index::Index(std::string name, Tape *tape) {
     loads = 0;
     saves = 0;
     this->name = name;
+    this->tape = tape;
     for (int i = 0; i < PAGE_RECORDS_INDEX; i++) {
         page[i] = new index_t();
     }
@@ -16,6 +17,33 @@ Index::~Index() {
         delete page[i];
     }
 }
+
+void Index::goToStart() {
+    current_page = 0;
+    current_record = 0;
+    load();
+}
+
+void Index::find(int key) {
+    goToStart();
+    index_t *record = page[current_record];
+    index_t lastRecord = *record;
+    while (!isAtFileEnd()) {
+        if (lastRecord.key > key && record->key < key) {
+            break;
+        }
+        lastRecord = *record;
+        record = next();
+    }
+#ifdef DEBUG
+    std::cout << "[INDEX] Will search at page: " << lastRecord.page << std::endl;
+#endif
+    tape->loadPage(lastRecord.page);
+    tape->find(key);
+}
+
+
+bool Index::isAtFileEnd() { return !page[current_record]->exists(); }
 
 void Index::resetTape() {
     current_record = 0;

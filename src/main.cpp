@@ -24,25 +24,26 @@ void help() {
 
 int main() {
     helpers::clearFiles();
+    Tape *overflowTape = new Tape(OVERFLOW_NAME);
     Tape *mainTape = new Tape(TAPE_NAME);
     Tape *debugTape = new Tape("DEBUG_TAPE.txt");
-    Index *index = new Index(INDEX_NAME);
+    Index *index = new Index(INDEX_NAME, mainTape);
     debugTape->load();
     Cylinder *cyl = new Cylinder();
     cyl->clear();
     *cyl = *debugTape->getCurrentRecord();
     while (!debugTape->isAtFileEnd()) {
         mainTape->add(cyl->key, cyl->base, cyl->height, cyl->pointer);
-        index->add(cyl->key, cyl->pointer);
+        // index->add(cyl->key, cyl->pointer);
         *cyl = *debugTape->next();
     }
     delete cyl;
     mainTape->save();
-    index->save();
-    std::pair<Cylinder*, Position> found = mainTape->find(9);
-    std::cout << "Found at page: " << found.second.page << " position: " << found.second.index << std::endl;
+    // index->save();
+    index->find(9);
     delete mainTape;
     delete index;
+    delete overflowTape;
     delete debugTape;
     return 0;
 }
