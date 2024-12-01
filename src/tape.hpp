@@ -45,9 +45,10 @@ public:
 private:
     Tape *overflow;
     std::pair<Cylinder*, Position> get(int key, int pointer);
-    void insertAtOverflow(int pointer, Cylinder *cyl);
+    bool insertAtOverflow(int pointer, Cylinder *cyl, Cylinder *mainTapeCylinder);
     int pointerToPage(int pointer);
     int pointerToOffset(int pointer);
+    int recordToPointer(int current_record, int current_page);
     bool isAtPageEnd();
     std::fstream file;
     int current_record = 0;

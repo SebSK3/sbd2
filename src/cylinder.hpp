@@ -44,7 +44,7 @@ public:
     }
 
     bool operator==(const Cylinder &other) const {
-        return GetVolume() == other.GetVolume();
+        return key == other.key;
     }
 
     Cylinder &operator=(const Cylinder &other) {

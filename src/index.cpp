@@ -54,9 +54,6 @@ void Index::insert(Cylinder *cyl) {
         lastRecord = *record;
         record = next();
     }
-#ifdef DEBUG
-    std::cout << "[INDEX] Will insert at page: " << lastRecord.page << std::endl;
-#endif
     tape->loadPage(lastRecord.page);
     tape->insert(cyl);
 }
