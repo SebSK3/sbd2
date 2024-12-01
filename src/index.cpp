@@ -153,3 +153,28 @@ bool Index::fullPageHandler(bool shouldSave, bool shouldLoad) {
 
 
 bool Index::isFull() { return current_record >= PAGE_RECORDS_INDEX; }
+
+void Index::dump() {
+    std::cout << "\n>>>>>>>>>>>>>>>INDEX<<<<<<<<<<<<<<<" << std::endl;
+    int rememberLoads = loads;
+    uint remember_page = current_page;
+    uint remember_record = current_record;
+    current_record = 0;
+    current_page = 0;
+    load();
+    index_t *idx = page[current_record];
+    int last_page = -1;
+
+    while (!isAtFileEnd()) {
+        if (last_page != current_page) {
+            std::cout << "===== PAGE: " << current_page << " =====" << std::endl;
+            last_page = current_page;
+        }
+        std::cout << "PAGE:" << idx->page << " KEY:" << idx->key << std::endl;
+        idx = next();
+    }
+    current_page = remember_page;
+    current_record = remember_record;
+    loads = rememberLoads;
+    tape->dumpFile();
+}

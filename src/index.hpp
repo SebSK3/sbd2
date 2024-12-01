@@ -52,6 +52,7 @@ public:
     void insert(Cylinder *cyl);
     index_t *next();
     void add(int key, int page);
+    void dump();
 private:
     std::fstream file;
     uint current_record = 0;

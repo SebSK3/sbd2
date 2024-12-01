@@ -179,18 +179,17 @@ void Tape::insert(Cylinder *cyl) {
                 if (overflow->insertAtOverflow(lastRecord->pointer, cyl, lastRecord)) {
                     // Replace pointer in main tape (here)
                     save(false);
-                    return;
                 }
+                return;
             } else {
                 if (!record->exists()) {
                     *record = *cyl;
                     save();
                     return;
                 } else {
-                    // reorganise
-
+                    // TODO: handle overflow
+                    return;
                 }
-                // TODO: handle overflow
             }
         }
         lastRecord = record;
@@ -200,72 +199,117 @@ void Tape::insert(Cylinder *cyl) {
             break;
         record = next();
     }
+    // Last place in page - insert at it's overflow
+
+   if (overflow->insertAtOverflow(lastRecord->pointer, cyl, lastRecord)) {
+        save(false);
+   }
 }
 
 int Tape::recordToPointer(int current_record, int current_page) {
     return (current_record + (PAGE_RECORDS * current_page)) + 1;
 }
 
+// Returns true if maintape needs to be updated (saved)
 bool Tape::insertAtOverflow(int pointer, Cylinder *cyl, Cylinder *mainTapeCylinder) {
-    int current_pointer = pointer;
-    int last_pointer = pointer;
-    bool shouldReplaceAtMainTape = false, shouldReplace = false;
-    loadPage(pointerToPage(current_pointer));
-    current_record = pointerToOffset(current_pointer);
-    Cylinder lastRecord = *page[current_record];
+    int appended_pointer;
+    loadPage(pointerToPage(pointer));
+    current_record = pointerToOffset(pointer);
+    // There is no pointer in main tape - add this as a new overflow chain start
+    if (pointer == 0) {
+        current_record++; // edge case fix
+        while (!isAtFileEnd()) {
+            next();
+        }
+        add(cyl->key, cyl->base, cyl->height, cyl->pointer);
+        appended_pointer = recordToPointer(current_record, current_page);
+        save(false);
+        mainTapeCylinder->pointer = appended_pointer;
+        return true;
+    }
+    int next_pointer = pointer;
+    int previous_pointer = pointer;
+    bool shouldReplaceAtMainTape = false, lastInOverflow = false;
+    Cylinder lastRecord = *mainTapeCylinder;
     Cylinder *record = page[current_record];
     while (record->exists() && record->pointer != 0 && record->key < cyl->key) {
-        last_pointer = current_pointer;
-        current_pointer = page[current_record]->pointer;
-        if (current_page != pointerToPage(current_pointer)) {
-            loadPage(pointerToPage(current_pointer));
+        previous_pointer = next_pointer;
+        next_pointer = page[current_record]->pointer;
+        if (current_page != pointerToPage(next_pointer)) {
+            loadPage(pointerToPage(next_pointer));
         }
         lastRecord = *record;
-        current_record = pointerToOffset(current_pointer);
+        current_record = pointerToOffset(next_pointer);
         record = page[current_record];
     }
-    // Handle chain replacing
-
-    // Have to insert before record
-    if (record->exists() && record->key > cyl->key) {
-        shouldReplace = true;
-        if (record->pointer == 0 && lastRecord == *record) {
-            // This record is last, should we replace at main tape?
-            // Have to replace at main tape
-            shouldReplaceAtMainTape = true;
-            cyl->pointer = mainTapeCylinder->pointer;
-        } else {
-            // Have to replace at overflow
-            cyl->pointer = lastRecord.pointer;
-            current_pointer = last_pointer;
-        }
+    if (record->key < cyl->key) {
+        lastInOverflow = true;
     }
-
-    // if (record->exists() && record->pointer == 0 && record->key < cyl->key) {
-    // } else {
-    //     if (current_pointer == last_pointer) {
-    //     }
-    //     current_pointer = last_pointer;
-    // }
-
+    if (lastRecord == *mainTapeCylinder && mainTapeCylinder->key < cyl->key && cyl->key < record->key) {
+        shouldReplaceAtMainTape = true;
+    }
     // TODO: remember last page number
     while (!isAtFileEnd()) {
         next();
     }
+    if (!lastInOverflow) {
+        cyl->pointer = next_pointer;
+    }
     add(cyl->key, cyl->base, cyl->height, cyl->pointer);
-    int appended_pointer = recordToPointer(current_record, current_page);
+    appended_pointer = recordToPointer(current_record, current_page);
     save(false);
+
+    // Handle chain replacing
+    // previous record is in maintape:
     if (shouldReplaceAtMainTape) {
         mainTapeCylinder->pointer = appended_pointer;
-    } else {
-        // Should append
-        if (current_page != pointerToPage(current_pointer)) {
-            loadPage(pointerToPage(current_pointer));
-        }
-        current_record = pointerToOffset(current_pointer);
-        page[current_record]->pointer = appended_pointer;
-        save();
+        return true;
     }
+    loadPageByPointer(previous_pointer);
+    current_record = pointerToOffset(previous_pointer);
+    page[current_record]->pointer = appended_pointer;
+    save();
+    if (!lastInOverflow) {
+        // loadPageByPointer(next_pointer);
+        // current_record = pointerToOffset(next_pointer);
+        // page[current_record]->pointer = next_pointer;
+        // save();
+    }
+
+    // Have lastRecord, nextRecord and do this accordingly.
+
+
+    // Have to insert before record
+    // if (record->exists() && record->key > cyl->key) {
+    //     if (record->pointer == 0 && lastRecord == *record) {
+    //         // Have to replace at main tape
+    //         shouldReplaceAtMainTape = true;
+    //         cyl->pointer = mainTapeCylinder->pointer;
+    //     } else if (record->pointer != 0 && lastRecord == *record) {
+    //         // Have to replace at start of overflow, and in main tape
+    //         cyl->pointer = mainTapeCylinder->pointer;
+    //         current_pointer = record->pointer;
+    //         shouldReplaceAtMainTape = true;
+    //         shouldReplace = true;
+    //     } else {
+    //         // Replace at overflow, nothing before record
+    //         cyl->pointer = lastRecord.pointer;
+    //         current_pointer = last_pointer;
+    //         shouldReplace = true;
+    //     }
+    // }
+
+    // if (shouldReplaceAtMainTape) {
+    //     mainTapeCylinder->pointer = appended_pointer;
+    // } else {
+    //     // Should replace/append
+    //     if (current_page != pointerToPage(current_pointer)) {
+    //         loadPage(pointerToPage(current_pointer));
+    //     }
+    //     current_record = pointerToOffset(current_pointer);
+    //     page[current_record]->pointer = appended_pointer;
+    //     save();
+    // }
 
     // if (shouldReplaceAtMainTape) {
     //     mainTapeCylinder->pointer = appended_pointer;
@@ -278,7 +322,13 @@ bool Tape::insertAtOverflow(int pointer, Cylinder *cyl, Cylinder *mainTapeCylind
     //     page[current_record]->pointer = appended_pointer;
     //     save();
     // }
-    return shouldReplaceAtMainTape;
+    return false;
+}
+
+void Tape::loadPageByPointer(int pointer) {
+    if (current_page != pointerToPage(pointer)) {
+        loadPage(pointerToPage(pointer));
+    }
 }
 
 bool Tape::isAtPageEnd() {

@@ -48,6 +48,7 @@ private:
     bool insertAtOverflow(int pointer, Cylinder *cyl, Cylinder *mainTapeCylinder);
     int pointerToPage(int pointer);
     int pointerToOffset(int pointer);
+    void loadPageByPointer(int pointer);
     int recordToPointer(int current_record, int current_page);
     bool isAtPageEnd();
     std::fstream file;

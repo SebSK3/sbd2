@@ -20,6 +20,29 @@ void help() {
                  "* * * * * * * * * * * * * * * * * * * * *\n"
               << std::endl;
 }
+void input(Index *index, Tape *tape) {
+    std::string input;
+
+    Cylinder cyl;
+    cyl.pointer = 0;
+    while (true) {
+        std::cout << "> ";
+        std::cin >> input;
+        if (input == "dump") {
+            index->dump();
+            continue;
+        }
+        if (input == "insert") {
+            std::cin >> cyl.key >> cyl.base >> cyl.height;
+            cyl.pointer = 0;
+            if (!parse(cyl.key) || !parse(cyl.base) || !parse(cyl.height)) {
+                std::cout << "WRONG NUMBER" << std::endl;
+                continue;
+            }
+            index->insert(&cyl);
+        }
+    }
+}
 
 int main() {
     helpers::clearFiles();
@@ -39,6 +62,8 @@ int main() {
     }
     delete cyl;
     mainTape->save();
+    help();
+    input(index, mainTape);
     // index->save();
     // std::pair<Cylinder*, Position> found = index->find(6);
     // std::cout << "Place: ";
@@ -46,38 +71,38 @@ int main() {
     // if (found.first != nullptr) {
     //     std::cout << "FOUND" << std::endl;
     // }
-    mainTape->dumpFile();
-    Cylinder cyl2;
-    cyl2.key = 3;
-    cyl2.base = 3;
-    cyl2.height = 3;
-    cyl2.pointer = 0;
-    index->insert(&cyl2);
-    cyl2.key = 6;
-    cyl2.base = 6;
-    cyl2.height = 6;
-    cyl2.pointer = 0;
-    index->insert(&cyl2);
-    cyl2.key = 4;
-    cyl2.base = 4;
-    cyl2.height = 4;
-    cyl2.pointer = 0;
-    index->insert(&cyl2);
-    cyl2.key = 8;
-    cyl2.base = 8;
-    cyl2.height = 8;
-    cyl2.pointer = 0;
-    index->insert(&cyl2);
-    cyl2.key = 7;
-    cyl2.base = 7;
-    cyl2.height = 7;
-    cyl2.pointer = 0;
-    index->insert(&cyl2);
-    cyl2.key = 23;
-    cyl2.base = 23;
-    cyl2.height = 23;
-    cyl2.pointer = 0;
-    index->insert(&cyl2);
+    // mainTape->dumpFile();
+    // Cylinder cyl2;
+    // cyl2.key = 3;
+    // cyl2.base = 3;
+    // cyl2.height = 3;
+    // cyl2.pointer = 0;
+    // index->insert(&cyl2);
+    // cyl2.key = 6;
+    // cyl2.base = 6;
+    // cyl2.height = 6;
+    // cyl2.pointer = 0;
+    // index->insert(&cyl2);
+    // cyl2.key = 4;
+    // cyl2.base = 4;
+    // cyl2.height = 4;
+    // cyl2.pointer = 0;
+    // index->insert(&cyl2);
+    // cyl2.key = 8;
+    // cyl2.base = 8;
+    // cyl2.height = 8;
+    // cyl2.pointer = 0;
+    // index->insert(&cyl2);
+    // cyl2.key = 7;
+    // cyl2.base = 7;
+    // cyl2.height = 7;
+    // cyl2.pointer = 0;
+    // index->insert(&cyl2);
+    // cyl2.key = 23;
+    // cyl2.base = 23;
+    // cyl2.height = 23;
+    // cyl2.pointer = 0;
+    // index->insert(&cyl2);
 
     mainTape->dumpFile();
 
