@@ -49,26 +49,29 @@ int main() {
     Tape *overflowTape = new Tape(OVERFLOW_NAME);
     Tape *mainTape = new Tape(TAPE_NAME);
     mainTape->loadOverflow(overflowTape);
-    Tape *debugTape = new Tape("DEBUG_TAPE.txt");
+    mainTape->numberOfPages = 3;
+    mainTape->fill();
+    overflowTape->numberOfPages = 1;
+    overflowTape->fill();
+    // Tape *debugTape = new Tape("DEBUG_TAPE.txt");
     Index *index = new Index(INDEX_NAME, mainTape);
-    debugTape->load();
-    Cylinder *cyl = new Cylinder();
-    cyl->clear();
-    *cyl = *debugTape->getCurrentRecord();
-    while (!debugTape->isAtFileEnd()) {
-        mainTape->add(cyl->key, cyl->base, cyl->height, cyl->pointer);
-        // index->add(cyl->key, cyl->pointer);
-        *cyl = *debugTape->next();
-    }
-    delete cyl;
-    mainTape->save();
+    // debugTape->load();
+    // Cylinder *cyl = new Cylinder();
+    // cyl->clear();
+    // *cyl = *debugTape->getCurrentRecord();
+    // while (!debugTape->isAtFileEnd()) {
+    //     mainTape->add(cyl->key, cyl->base, cyl->height, cyl->pointer);
+    //     // index->add(cyl->key, cyl->pointer);
+    //     *cyl = *debugTape->next();
+    // }
+    // delete cyl;
+    // mainTape->save();
     help();
     input(index, mainTape);
-    mainTape->dumpFile();
 
     delete mainTape;
     delete index;
     delete overflowTape;
-    delete debugTape;
+    // delete debugTape;
     return 0;
 }

@@ -17,6 +17,7 @@ public:
     ~Tape();
     void loadOverflow(Tape *overflow);
     std::string name;
+    int numberOfPages = 1;
     uint loads;
     uint saves;
 
@@ -28,6 +29,7 @@ public:
     void add(int key, int base, int height, int pointer);
     void save(bool shouldClear = true);
     bool load();
+    void fill();
     bool loadPage(int page);
     void resetFile();
     void resetTape();
