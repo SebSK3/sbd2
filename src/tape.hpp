@@ -4,12 +4,9 @@
 #include "helpers.hpp"
 #include "cylinder.hpp"
 
-#include <algorithm>
+#include <cmath>
 #include <fstream>
-#include <iostream>
-#include <memory>
 #include <string>
-#include <vector>
 
 class Tape {
 public:
@@ -20,8 +17,11 @@ public:
     int numberOfPages = 1;
     uint loads;
     uint saves;
+    int numberOfRecords;
+    int numberOfOverflowRecords;
 
     void insert(Cylinder *cyl);
+    void reorganise(double alpha);
 
     Cylinder *getCurrentRecord();
     std::pair<Cylinder*, Position> find(int key);
@@ -44,17 +44,17 @@ public:
     void dumpToFile();
 #endif
 
-private:
     Tape *overflow;
-    std::pair<Cylinder*, Position> get(int key, int pointer);
-    bool insertAtOverflow(int pointer, Cylinder *cyl, Cylinder *mainTapeCylinder);
+    int current_record = 0;
     int pointerToPage(int pointer);
     int pointerToOffset(int pointer);
+private:
+    std::pair<Cylinder*, Position> get(int key, int pointer);
+    bool insertAtOverflow(int pointer, Cylinder *cyl, Cylinder *mainTapeCylinder);
     void loadPageByPointer(int pointer);
     int recordToPointer(int current_record, int current_page);
     bool isAtPageEnd();
     std::fstream file;
-    int current_record = 0;
     int current_page = 0;
     Cylinder *page[PAGE_RECORDS];
     bool fullPageHandler(bool shouldSave = false, bool shouldLoad = true);

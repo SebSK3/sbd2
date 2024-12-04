@@ -4,9 +4,17 @@ void helpers::clearFiles() {
     std::ofstream file;
     file.open(TAPE_NAME, std::ofstream::out | std::ofstream::trunc);
     file.close();
-    file.open(INDEX_NAME, std::ofstream::out | std::ofstream::trunc);
-    file.close();
+//    file.open(INDEX_NAME, std::ofstream::out | std::ofstream::trunc);
+//    file.close();
     file.open(OVERFLOW_NAME, std::ofstream::out | std::ofstream::trunc);
+    file.close();
+}
+
+void helpers::createTemps() {
+    std::ofstream file;
+    file.open(TEMP_TAPE_NAME, std::ofstream::out | std::ofstream::trunc);
+    file.close();
+    file.open(TEMP_INDEX_NAME, std::ofstream::out | std::ofstream::trunc);
     file.close();
 }
 

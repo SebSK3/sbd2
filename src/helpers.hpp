@@ -9,6 +9,7 @@
 
 namespace helpers {
 void clearFiles();
+void createTemps();
 std::string serializeKey(int pointer);
 std::string serializePage(int page);
 }; // namespace helpers

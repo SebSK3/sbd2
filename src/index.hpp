@@ -44,6 +44,8 @@ public:
 
     void resetTape();
     void resetPage();
+    void reorganise(double alpha);
+    Cylinder *getByOffset(int offset);
 
     void save();
     bool load();

@@ -1,4 +1,5 @@
 #include "index.hpp"
+#include "consts.hpp"
 
 
 Index::Index(std::string name, Tape *tape) {
@@ -35,9 +36,6 @@ std::pair<Cylinder*, Position> Index::find(int key) {
         lastRecord = *record;
         record = next();
     }
-#ifdef DEBUG
-    std::cout << "[INDEX] Will search at page: " << lastRecord.page << std::endl;
-#endif
     tape->loadPage(lastRecord.page);
     return tape->find(key);
 }
@@ -130,8 +128,8 @@ void Index::save() {
     file.seekg(current_page * PAGE_SIZE_INDEX);
     for (int i = 0; i < PAGE_RECORDS_INDEX; i++) {
         if (page[i]->exists()) {
-            file.write(helpers::serializeKey(page[i]->key).c_str(), KEY_LENGTH);
             file.write(helpers::serializePage(page[i]->page).c_str(), PAGE_NUMBER_LENGTH);
+            file.write(helpers::serializeKey(page[i]->key).c_str(), KEY_LENGTH);
         }
         page[i]->clear();
     }
@@ -151,6 +149,11 @@ bool Index::fullPageHandler(bool shouldSave, bool shouldLoad) {
     return false;
 }
 
+Cylinder *Index::getByOffset(int offset) {
+    tape->loadPage(offset / PAGE_RECORDS);
+    tape->current_record = offset % PAGE_RECORDS;
+    return tape->getCurrentRecord();
+}
 
 bool Index::isFull() { return current_record >= PAGE_RECORDS_INDEX; }
 
@@ -177,4 +180,63 @@ void Index::dump() {
     current_record = remember_record;
     loads = rememberLoads;
     tape->dumpFile();
+}
+
+void Index::reorganise(double alpha) {
+    int maxRecordsPerPage = std::floor(PAGE_RECORDS * alpha);
+    int amountOfPagesWithoutOverflow = ceil((tape->numberOfRecords + tape->overflow->numberOfRecords) / maxRecordsPerPage);
+    if (amountOfPagesWithoutOverflow == 0) {
+        return;
+    }
+    Tape tempMainTape(TEMP_TAPE_NAME);
+    Index tempIndex(TEMP_INDEX_NAME, &tempMainTape);
+    helpers::createTemps();
+    tempMainTape.numberOfPages = amountOfPagesWithoutOverflow;
+    tempMainTape.fill();
+
+    int recordsOnCurrentPage = 0;
+    int currentPage = 0;
+    int processedRecords = 0;
+    bool isInOverflow = false;
+    int currentRecordOffset = 0;
+    int currentPrimaryRecordOffset = 0;
+
+    Cylinder *currentRecord;
+    while (processedRecords != tape->numberOfRecords + tape->overflow->numberOfOverflowRecords) {
+        if (!isInOverflow) {
+            currentRecord = getByOffset(currentPrimaryRecordOffset);
+        }
+        if (!currentRecord->exists()) {
+            currentPrimaryRecordOffset++;
+            currentRecordOffset = currentPrimaryRecordOffset;
+        }
+
+        if (recordsOnCurrentPage >= maxRecordsPerPage) {
+            tempMainTape.save();
+            currentPage++;
+            recordsOnCurrentPage = 0;
+        }
+
+        if (recordsOnCurrentPage == 0) {
+            tempIndex.add(currentPage, currentRecord->key);
+        }
+        tempMainTape.loadPage(currentPage);
+        tempMainTape.insert(currentRecord);
+        recordsOnCurrentPage++;
+        processedRecords++;
+        if (currentRecord->pointer == 0) {
+            currentPrimaryRecordOffset++;
+            isInOverflow = false;
+        } else {
+            isInOverflow = true;
+            int pointer = currentRecord->pointer;
+            tape->overflow->loadPage(tape->overflow->pointerToPage(pointer));
+            tape->overflow->current_record = tape->overflow->pointerToOffset(pointer);
+            currentRecord = tape->overflow->getCurrentRecord();
+        }
+    }
+    tempMainTape.numberOfPages = currentPage+1;
+    tempMainTape.save();
+    tempIndex.save();
+    tempIndex.dump();
 }

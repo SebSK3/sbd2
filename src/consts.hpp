@@ -30,6 +30,9 @@ const std::string TAPE_NAME = "main_tape.txt";
 const std::string INDEX_NAME = "index.txt";
 const std::string OVERFLOW_NAME = "overflow.txt";
 
+const std::string TEMP_TAPE_NAME = "main_tape_temp.txt";
+const std::string TEMP_INDEX_NAME = "index_temp.txt";
+
 #ifdef DEBUG
 const std::string DEBUG_TAPE_NAME = "DEBUG_TAPE.txt";
 #endif

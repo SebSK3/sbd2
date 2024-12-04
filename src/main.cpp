@@ -41,6 +41,9 @@ void input(Index *index, Tape *tape) {
             }
             index->insert(&cyl);
         }
+        if (input == "reorganise") {
+            index->reorganise(0.5);
+        }
     }
 }
 
@@ -50,8 +53,10 @@ int main() {
     Tape *mainTape = new Tape(TAPE_NAME);
     mainTape->loadOverflow(overflowTape);
     mainTape->numberOfPages = 3;
+    mainTape->numberOfRecords = 0;
     mainTape->fill();
     overflowTape->numberOfPages = 1;
+    overflowTape->numberOfOverflowRecords = 0;
     overflowTape->fill();
     // Tape *debugTape = new Tape("DEBUG_TAPE.txt");
     Index *index = new Index(INDEX_NAME, mainTape);
