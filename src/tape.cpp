@@ -180,7 +180,6 @@ void Tape::insert(Cylinder *cyl) {
     Cylinder *record = page[current_record];
     Cylinder *lastRecord = record;
     Position pos;
-    numberOfRecords++;
     pos.page = current_page;
     pos.index = current_record;
 
@@ -191,14 +190,14 @@ void Tape::insert(Cylinder *cyl) {
         }
         if (lastRecord->key <= key && key < record->key) {
             if (overflow->insertAtOverflow(lastRecord->pointer, cyl, lastRecord)) {
-                // The record will be counted in overflow records
-                numberOfRecords--;
                 // Replace pointer in main tape (here)
                 save(false);
-            }
+            }            
             return;
         } else if (!record->exists()) {
             *record = *cyl;
+
+            numberOfRecords++;
             save(false);
             return;
         }
@@ -210,10 +209,9 @@ void Tape::insert(Cylinder *cyl) {
         record = next();
     }
     // Last place in page - insert at it's overflow
-
-   if (overflow->insertAtOverflow(lastRecord->pointer, cyl, lastRecord)) {
+    if (overflow->insertAtOverflow(lastRecord->pointer, cyl, lastRecord)) {
         save(false);
-   }
+    }
 }
 
 int Tape::recordToPointer(int current_record, int current_page) {

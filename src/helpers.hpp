@@ -1,6 +1,8 @@
 #pragma once
 
 #include "consts.hpp"
+#include <cstdio>
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -9,6 +11,8 @@
 
 namespace helpers {
 void clearFiles();
+void moveAfterReorganise();
+void clearOverflow();
 void createTemps();
 std::string serializeKey(int pointer);
 std::string serializePage(int page);

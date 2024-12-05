@@ -198,7 +198,6 @@ void Index::reorganise(double alpha) {
     int currentPage = 0;
     int processedRecords = 0;
     bool isInOverflow = false;
-    int currentRecordOffset = 0;
     int currentPrimaryRecordOffset = 0;
 
     Cylinder *currentRecord;
@@ -208,7 +207,7 @@ void Index::reorganise(double alpha) {
         }
         if (!currentRecord->exists()) {
             currentPrimaryRecordOffset++;
-            currentRecordOffset = currentPrimaryRecordOffset;
+            continue;
         }
 
         if (recordsOnCurrentPage >= maxRecordsPerPage) {
@@ -221,22 +220,24 @@ void Index::reorganise(double alpha) {
             tempIndex.add(currentPage, currentRecord->key);
         }
         tempMainTape.loadPage(currentPage);
+        int pointer = currentRecord->pointer;
+        currentRecord->pointer = 0;
         tempMainTape.insert(currentRecord);
         recordsOnCurrentPage++;
         processedRecords++;
-        if (currentRecord->pointer == 0) {
+        if (pointer == 0) {
             currentPrimaryRecordOffset++;
             isInOverflow = false;
         } else {
             isInOverflow = true;
-            int pointer = currentRecord->pointer;
             tape->overflow->loadPage(tape->overflow->pointerToPage(pointer));
             tape->overflow->current_record = tape->overflow->pointerToOffset(pointer);
             currentRecord = tape->overflow->getCurrentRecord();
         }
     }
     tempMainTape.numberOfPages = currentPage+1;
+    tape->numberOfPages = tempMainTape.numberOfPages;
     tempMainTape.save();
     tempIndex.save();
-    tempIndex.dump();
+    helpers::moveAfterReorganise();
 }

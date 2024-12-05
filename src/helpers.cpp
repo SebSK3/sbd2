@@ -4,8 +4,22 @@ void helpers::clearFiles() {
     std::ofstream file;
     file.open(TAPE_NAME, std::ofstream::out | std::ofstream::trunc);
     file.close();
-//    file.open(INDEX_NAME, std::ofstream::out | std::ofstream::trunc);
-//    file.close();
+    std::remove(INDEX_NAME.c_str());
+    std::filesystem::copy("index_start.txt", INDEX_NAME.c_str());
+    file.open(OVERFLOW_NAME, std::ofstream::out | std::ofstream::trunc);
+    file.close();
+}
+
+void helpers::moveAfterReorganise() {
+    std::remove(INDEX_NAME.c_str());
+    std::remove(TAPE_NAME.c_str());
+    std::rename(TEMP_INDEX_NAME.c_str(), INDEX_NAME.c_str());
+    std::rename(TEMP_TAPE_NAME.c_str(), TAPE_NAME.c_str());
+    clearOverflow();
+}
+
+void helpers::clearOverflow() {
+    std::ofstream file;
     file.open(OVERFLOW_NAME, std::ofstream::out | std::ofstream::trunc);
     file.close();
 }
