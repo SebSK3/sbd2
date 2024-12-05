@@ -85,4 +85,4 @@ Overflow file:
 | #8           | EMPTY  | ...  |   EMPTY      |
 | #9           | 4  | ...  |    EMPTY     |
 
-The situtation in overflow file cannot happen (you will fill it from #1 increasing) but it's for visualisation, how you need to have implemented jumping around.
+The situtation in overflow file cannot happen (you will fill it from #1 increasing). The situation presented is for visualisation, of how you need to have implemented jumping around.
