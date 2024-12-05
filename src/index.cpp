@@ -26,7 +26,21 @@ void Index::goToStart() {
 }
 
 void Index::getFromFile() {
-    
+    std::ifstream file("input.txt");
+    std::string line;
+    Cylinder cyl;
+    cyl.key = 0;
+    cyl.base = 0;
+    cyl.height = 0;
+    cyl.pointer = 0;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string operation;
+        iss >> operation >> cyl.key >> cyl.base >> cyl.height;
+        insert(&cyl);
+        cyl.pointer = 0;
+    }
+    file.close();
 }
 
 std::pair<Cylinder*, Position> Index::find(int key) {
