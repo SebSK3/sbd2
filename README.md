@@ -85,8 +85,4 @@ Overflow file:
 | #8           | EMPTY  | ...  |   EMPTY      |
 | #9           | 4  | ...  |    EMPTY     |
 
-You may ask why #6 in main tape file is empty,
-I will say to you I have absolutely no idea,
-but it's somewhat like this in Dominik Lau's pdf raport.
-I may come back with explanation in future commits.
-It may have to do with reorganisation.
+The situtation in overflow file cannot happen (you will fill it from #1 increasing) but it's for visualisation, how you need to have implemented jumping around.
