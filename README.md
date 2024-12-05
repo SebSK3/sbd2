@@ -29,7 +29,7 @@ In `index.txt`:
 In `main_tape.txt`:
 
 | 4 Bytes | X Bytes | 4 Bytes |
-| :-: | :-: | :-: | :-: |
+| :-: | :-: | :-: |
 | Key (int) | YOUR DATA | OverflowPointer (int) |
 
 In `overflow.txt`:
