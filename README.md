@@ -35,7 +35,7 @@ In `main_tape.txt`:
 In `overflow.txt`:
 
 | 4 Bytes | X Bytes | 4 Bytes |
-| :-: | :-: | :-: | :-: |
+| :-: | :-: | :-: |
 | Key (int) | YOUR DATA | OverflowPointer (int) |
 
 Below is example, where page size is of 3 records. This example can't really happen
