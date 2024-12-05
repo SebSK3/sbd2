@@ -20,7 +20,7 @@ public:
     int numberOfRecords;
     int numberOfOverflowRecords;
 
-    void insert(Cylinder *cyl);
+    bool insert(Cylinder *cyl);
     void reorganise(double alpha);
 
     Cylinder *getCurrentRecord();
@@ -39,6 +39,7 @@ public:
     void goToStart();
     bool isAtFileEnd();
     void dumpFile();
+    bool overflowFull();
 #ifdef DEBUG
     void dump();
     void dumpToFile();

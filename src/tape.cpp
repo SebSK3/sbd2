@@ -173,7 +173,7 @@ std::pair<Cylinder *, Position> Tape::get(int key, int pointer) {
     }
 }
 
-void Tape::insert(Cylinder *cyl) {
+bool Tape::insert(Cylinder *cyl) {
     int key = cyl->key;
 
     current_record = 0;
@@ -186,20 +186,20 @@ void Tape::insert(Cylinder *cyl) {
     while (true) {
         if (lastRecord->key == key || record->key == key) {
             std::cout << "[ERROR] KEY ALREADY IN DATABASE" << std::endl;
-            return;
+            return false;
         }
         if (lastRecord->key <= key && key < record->key) {
             if (overflow->insertAtOverflow(lastRecord->pointer, cyl, lastRecord)) {
                 // Replace pointer in main tape (here)
                 save(false);
-            }            
-            return;
+            }
+            return overflow->overflowFull();
         } else if (!record->exists()) {
             *record = *cyl;
 
             numberOfRecords++;
             save(false);
-            return;
+            return false;
         }
         lastRecord = record;
         pos.page = current_page;
@@ -212,6 +212,14 @@ void Tape::insert(Cylinder *cyl) {
     if (overflow->insertAtOverflow(lastRecord->pointer, cyl, lastRecord)) {
         save(false);
     }
+    return overflow->overflowFull();
+}
+
+bool Tape::overflowFull() {
+    if (numberOfOverflowRecords == numberOfPages*PAGE_RECORDS) {
+        return true;
+    }
+    return false;
 }
 
 int Tape::recordToPointer(int current_record, int current_page) {
@@ -223,6 +231,7 @@ bool Tape::insertAtOverflow(int pointer, Cylinder *cyl, Cylinder *mainTapeCylind
     int appended_pointer;
     numberOfOverflowRecords++;
     loadPage(pointerToPage(pointer));
+    load();
     current_record = pointerToOffset(pointer);
     // There is no pointer in main tape - add this as a new overflow chain start
     if (pointer == 0) {
@@ -284,7 +293,7 @@ bool Tape::insertAtOverflow(int pointer, Cylinder *cyl, Cylinder *mainTapeCylind
         loadPageByPointer(previous_pointer);
         current_record = pointerToOffset(previous_pointer);
         page[current_record]->pointer = appended_pointer;
-        save();
+        save(false);
         return false;
     } else {
         // Update previous pointer if it's in main tape

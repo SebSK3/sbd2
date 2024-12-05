@@ -13,10 +13,9 @@ bool parse(int num) {
 
 void help() {
     std::cout << "* * * * * * * * * * * * * * * * * * * * * * * * * * * * *\n* "
-                 "Commands:\n* help - shows this help\n* dump - dump mainTape "
-                 "file, by volume\n* random <N> - generate tape with random N "
-                 "records\n* file - read tape from file (default name: "
-                 "input.txt)\n* manual - generate tape from user input\n* "
+                 "Commands:\n* dump - print everything "
+                 "\n* file - read tape from file (default name: "
+                 "input.txt)\n* insert <key> <base> <height> - insert to database \n* reorganise - reorganise database\n"
                  "* * * * * * * * * * * * * * * * * * * * *\n"
               << std::endl;
 }
@@ -41,8 +40,11 @@ void input(Index *index, Tape *tape) {
             }
             index->insert(&cyl);
         }
+        if (input == "file") {
+            index->getFromFile();
+        }
         if (input == "reorganise") {
-            index->reorganise(0.5);
+            index->reorganise(ALPHA);
         }
     }
 }

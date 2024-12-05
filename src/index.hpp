@@ -44,6 +44,7 @@ public:
 
     void resetTape();
     void resetPage();
+    void getFromFile();
     void reorganise(double alpha);
     Cylinder *getByOffset(int offset);
 

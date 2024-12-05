@@ -25,6 +25,10 @@ void Index::goToStart() {
     load();
 }
 
+void Index::getFromFile() {
+    
+}
+
 std::pair<Cylinder*, Position> Index::find(int key) {
     goToStart();
     index_t *record = page[current_record];
@@ -53,7 +57,9 @@ void Index::insert(Cylinder *cyl) {
         record = next();
     }
     tape->loadPage(lastRecord.page);
-    tape->insert(cyl);
+    if (tape->insert(cyl)) {
+        reorganise(ALPHA);
+    }
 }
 
 
