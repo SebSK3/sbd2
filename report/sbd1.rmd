@@ -20,14 +20,80 @@ knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
 \renewcommand{\figurename}{Rys.}
 
 # Wprowadzenie
-Zaimplementowany przeze mnie algorytm to sortowanie przez scalanie w schemacie 2+1.
-Wylosowane przeze mnie typy rekordów to:
+Wylosowane przeze mnie typ rekordu to:
 
 >  29. File records: Right circular cylinders - the radius of the base and the
 >  height of the cylinder. Sorting by volume.
 
-Implementacja w języku C++. Przyjąłem, że jeden rekord jest podzielony na dwie liczby, rozmiar rekordu
-to 8 bajtów (4 bajty dla podstawy, 4 bajty dla wysokości). Rozmiar strony ustaliłem na 32, a potem na 320.
+Implementacja w języku C++. Przyjąłem, że jeden rekord jest podzielony na cztery liczby, rozmiar rekordu
+to 16 bajtów (4 bajty dla klucza, 4 bajty dla podstawy, 4 bajty dla wysokości,
+4 bajty dla wskaźnika). 
+
+# Opis struktury kodu
+
+Kod został głównie przeniesiony z projektu 1, w którym:
+
+- Klasa `Tape` zajmuje się obsługą zarówno głównej taśmy oraz przepełnienia
+- Klasa `Index` zajmuje się trzymaniem indeksów
+- Klasa `Cylinder` implementuje typ rekordu
+
+# Zasada działania
+
+## Łańcuch przepełnień
+
+Łańcuch przepełnień działa na zasadzie podobnej do struktury `linked list`,
+gdzie w moim wypadku, wskaźnikami jest offset w pliku dodany o 1 
+(wartość 0 jest u mnie wartością specjalną - wskaźnik nie istnieje).
+
+## Insert
+
+Gdy próbujemy umieścić nowy rekord w taśmie, najpierw przeszukujemy index.
+Index posiada w sobie informacje na której stronie zaczynają się
+poszczególne klucze, dlatego wystarczy że znajdziemy poprzednika od 
+pierwszego większego znalezionego klucza od tego który chcemy wstawić.
+Mając stronę, nie musimy przeszukiwać całego pliku a tylko skoczyć do wybranej
+strony i odczytać ją. W niej szukamy poprzednika i umieszczamy go zaraz
+po poprzedniku. Jeśli nie ma miejsca w głównej taśme, to umieszczamy
+go w łańcuchu przepełnień.
+
+## Reorganise
+
+1. Tworzymy dwa tymczasowe pliki: dodatkową taśmę i indeks, ze wzoru niżej
+wyliczamy liczbę stron głównych, gdzie $N,V$ - liczba rekordów w taśme głównej
+i przepełnieniu, $b$ - liczba rekordów danch na stronę, $\alpha$ - średnie
+zapełnienie strony po reorganizacji pliku.
+
+\begin{align}
+\lceil \frac{N+V}{b* \alpha }
+\end{align}
+
+2. Przechodizmy kolejno przez rekordy zgodnie z rośnięciem kluczy i umieszczamy
+je na kolejnyhc stronach (respektując $\alpha$)
+
+3. Usuwamy stare pliki i zamieniamy tymczasowe na nie.
+
+
+# Prezentacja wyników programu
+
+Po włączeniu programu użytkownikowi zostają pokazane wszystkie możliwości:
+
+TODO: przekopiować output tutaj
+
+Głównie są to 2 komendy:
+
+- `insert <key> <base> <height>` - dodanie rekordu do bazy
+- `file` - wczytanie komend z pliku (domyślnie plik z nazwą `input.txt`)
+- `dump` - wypisanie całej bazy
+- `reorganise` - reorganizacja całej bazy
+
+Przykładowe wyjście z programu:
+
+TODO: przykładowe wyjście
+
+# Eksperyment
+
+Przeprowadzono eksperymenty na zasadzie wczytywania danych z pliku,
+dane użyte do testów są w folderze `tests`.
 
 # Sortowanie przez scalanie
 
