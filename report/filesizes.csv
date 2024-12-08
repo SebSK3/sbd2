@@ -1,2 +1,6 @@
 N,rozmiar indeksu,rozmiar obszaru głównego,rozmiar obszaru przepełnienia
-50
+100,336,2688,256
+250,808,6464,768
+500,1856,14838,576
+1000,3200,25600,3200
+1500,5504,44032,1984

@@ -264,5 +264,6 @@ void Index::reorganise(double alpha) {
     helpers::moveAfterReorganise();
     tape->overflow->numberOfOverflowRecords = 0;
     tape->numberOfRecords = numberOfRecordsOverall;
+    tape->overflow->numberOfPages = ceil(amountOfPagesWithoutOverflow * 0.2);
     load();
 }

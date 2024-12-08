@@ -29,6 +29,10 @@ Implementacja w języku C++. Przyjąłem, że jeden rekord jest podzielony na cz
 to 16 bajtów (4 bajty dla klucza, 4 bajty dla podstawy, 4 bajty dla wysokości,
 4 bajty dla wskaźnika).
 
+Zastosowałem optymalizację polegającą na nie alokowaniu całego obszaru indeksu na raz,
+rozmiar dostosowuje się do zajętości miejsca. Nie ma to wpływu na algorytm,
+a głównie na zajętość pamięci.
+
 # Opis struktury kodu
 
 Kod został głównie przeniesiony z projektu 1, w którym:
@@ -94,3 +98,8 @@ TODO: przykładowe wyjście
 
 Przeprowadzono eksperymenty na zasadzie wczytywania danych z pliku,
 dane użyte do testów są w folderze `tests`.
+
+- Ilość rekordów przetrzymywanych w głównej taśmie przyjąłem jako 4
+- Rozmiar jednego rekordu w głównej taśmie lub obszarze przepełnienia to 16 bajtów
+- Rozmiar jednego rekordu w indeksie to 16 bajtów
+
