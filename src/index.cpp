@@ -45,6 +45,9 @@ void Index::getFromFile() {
         tape->saves = 0;
         tape->overflow->loads = 0;
         tape->overflow->saves = 0;
+        // if (tape->overflow->numberOfOverflowRecords > tape->overflow->numberOfPages*PAGE_RECORDS) raise(SIGTRAP);
+        // if (cyl.key == 534) raise(SIGTRAP);
+        dump();
         insert(&cyl);
 
         if (meanSaves == 0) {
@@ -82,6 +85,7 @@ void Index::insert(Cylinder *cyl) {
     index_t *record = page[current_record];
     index_t *lastRecord = record;
     bool shouldUpdateIndex = false;
+    if (record->key < key)
     while (!isAtFileEnd()) {
         if (lastRecord->key <= key && key < record->key) {
             break;
@@ -226,7 +230,7 @@ void Index::dump() {
 void Index::reorganise(double alpha) {
     int maxRecordsPerPage = std::floor(PAGE_RECORDS * alpha);
     int numberOfRecordsOverall = tape->numberOfRecords + tape->overflow->numberOfOverflowRecords;
-    int amountOfPagesWithoutOverflow = ceil((tape->numberOfRecords + tape->overflow->numberOfRecords) / maxRecordsPerPage);
+    int amountOfPagesWithoutOverflow = ceil((tape->numberOfRecords + tape->overflow->numberOfOverflowRecords) / maxRecordsPerPage);
     if (amountOfPagesWithoutOverflow == 0) {
         return;
     }

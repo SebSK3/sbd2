@@ -231,7 +231,7 @@ bool Tape::insert(Cylinder *cyl, bool &shouldUpdateIndex) {
 }
 
 bool Tape::overflowFull() {
-    if (numberOfOverflowRecords >= numberOfPages*PAGE_RECORDS) {
+    if (numberOfOverflowRecords == numberOfPages*PAGE_RECORDS) {
         return true;
     }
     return false;
@@ -261,6 +261,7 @@ bool Tape::insertAtOverflow(int pointer, Cylinder *cyl, Cylinder *mainTapeCylind
         mainTapeCylinder->pointer = appended_pointer;
         return true;
     }
+
     int next_pointer;
     int previous_pointer;
     Cylinder *nextOrLastRecord = page[current_record];
@@ -345,7 +346,7 @@ void Tape::save(bool shouldClear) {
 bool Tape::fullPageHandler(bool shouldSave, bool shouldLoad) {
     if (isFull()) {
         if (shouldSave)
-            save();
+            save(false);
         current_page++;
         current_record = 0;
         if (shouldLoad)
