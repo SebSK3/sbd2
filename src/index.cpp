@@ -204,6 +204,7 @@ void Index::dump() {
 
 void Index::reorganise(double alpha) {
     int maxRecordsPerPage = std::floor(PAGE_RECORDS * alpha);
+    int numberOfRecordsOverall = tape->numberOfRecords + tape->overflow->numberOfOverflowRecords;
     int amountOfPagesWithoutOverflow = ceil((tape->numberOfRecords + tape->overflow->numberOfRecords) / maxRecordsPerPage);
     if (amountOfPagesWithoutOverflow == 0) {
         return;
@@ -221,7 +222,7 @@ void Index::reorganise(double alpha) {
     int currentPrimaryRecordOffset = 0;
 
     Cylinder *currentRecord;
-    while (processedRecords != tape->numberOfRecords + tape->overflow->numberOfOverflowRecords) {
+    while (processedRecords != numberOfRecordsOverall) {
         if (!isInOverflow) {
             currentRecord = getByOffset(currentPrimaryRecordOffset);
         }
@@ -259,5 +260,9 @@ void Index::reorganise(double alpha) {
     tape->numberOfPages = tempMainTape.numberOfPages;
     tempMainTape.save();
     tempIndex.save();
+    tape->overflow->fill();
     helpers::moveAfterReorganise();
+    tape->overflow->numberOfOverflowRecords = 0;
+    tape->numberOfRecords = numberOfRecordsOverall;
+    load();
 }

@@ -23,8 +23,8 @@ const long PAGE_SIZE = 64;
 const int PAGE_RECORDS = PAGE_SIZE / RECORD_SIZE;
 
 
-const long PAGE_SIZE_INDEX = 80;
-const long PAGE_RECORDS_INDEX = 10;
+const long PAGE_SIZE_INDEX = 10000;
+const long PAGE_RECORDS_INDEX = 1250;
 
 const std::string INPUT_NAME = "input.txt";
 
