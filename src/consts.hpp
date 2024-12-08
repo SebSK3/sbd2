@@ -3,7 +3,7 @@
 
 const double PI = 3.14159265;
 
-const double ALPHA = 0.5;
+const double ALPHA = 0.7;
 
 // Settings for storing records
 const uint BASE_LENGTH = 4;

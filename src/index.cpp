@@ -47,7 +47,6 @@ void Index::getFromFile() {
         tape->overflow->saves = 0;
         // if (tape->overflow->numberOfOverflowRecords > tape->overflow->numberOfPages*PAGE_RECORDS) raise(SIGTRAP);
         // if (cyl.key == 534) raise(SIGTRAP);
-        dump();
         insert(&cyl);
 
         if (meanSaves == 0) {
@@ -94,6 +93,7 @@ void Index::insert(Cylinder *cyl) {
         record = next();
     }
     tape->loadPage(lastRecord->page);
+    tape->load();
     if (tape->insert(cyl, shouldUpdateIndex)) {
         if (shouldUpdateIndex) lastRecord->key = cyl->key;
         reorganise(ALPHA);
