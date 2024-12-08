@@ -15,12 +15,13 @@ public:
     void loadOverflow(Tape *overflow);
     std::string name;
     int numberOfPages = 1;
+    int lastPage = 0;
     uint loads;
     uint saves;
     int numberOfRecords;
     int numberOfOverflowRecords;
 
-    bool insert(Cylinder *cyl);
+    bool insert(Cylinder *cyl, bool &shouldUpdateIndex);
     void reorganise(double alpha);
 
     Cylinder *getCurrentRecord();

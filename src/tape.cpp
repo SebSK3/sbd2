@@ -3,6 +3,7 @@
 Tape::Tape(std::string name) {
     loads = 0;
     saves = 0;
+    lastPage = 0;
     this->name = name;
     for (int i = 0; i < PAGE_RECORDS; i++) {
         page[i] = new Cylinder();
@@ -173,7 +174,7 @@ std::pair<Cylinder *, Position> Tape::get(int key, int pointer) {
     }
 }
 
-bool Tape::insert(Cylinder *cyl) {
+bool Tape::insert(Cylinder *cyl, bool &shouldUpdateIndex) {
     int key = cyl->key;
 
     current_record = 0;
@@ -182,7 +183,17 @@ bool Tape::insert(Cylinder *cyl) {
     Position pos;
     pos.page = current_page;
     pos.index = current_record;
-
+    if (record->key > key) {
+        Cylinder recordToBackup = *cyl;
+        Cylinder tempRecord = *record;
+        *record = *cyl;
+        *cyl = tempRecord;
+        overflow->insertAtOverflow(record->pointer, cyl, record);
+        save(false);
+        shouldUpdateIndex = true;
+        *cyl = recordToBackup;
+        return overflow->overflowFull();
+    }
     while (true) {
         if (lastRecord->key == key || record->key == key) {
             std::cout << "[ERROR] KEY ALREADY IN DATABASE" << std::endl;
@@ -195,6 +206,10 @@ bool Tape::insert(Cylinder *cyl) {
             }
             return overflow->overflowFull();
         } else if (!record->exists()) {
+            if (lastRecord->key > key) {
+                std::cout << "THIS SHOULD NEVER HAPPEN, key:" << key << std::endl;
+                exit(1);
+            }
             *record = *cyl;
 
             numberOfRecords++;
@@ -216,7 +231,7 @@ bool Tape::insert(Cylinder *cyl) {
 }
 
 bool Tape::overflowFull() {
-    if (numberOfOverflowRecords == numberOfPages*PAGE_RECORDS) {
+    if (numberOfOverflowRecords >= numberOfPages*PAGE_RECORDS) {
         return true;
     }
     return false;
@@ -231,15 +246,15 @@ bool Tape::insertAtOverflow(int pointer, Cylinder *cyl, Cylinder *mainTapeCylind
     int appended_pointer;
     numberOfOverflowRecords++;
     loadPage(pointerToPage(pointer));
-    load();
     current_record = pointerToOffset(pointer);
     // There is no pointer in main tape - add this as a new overflow chain start
     if (pointer == 0) {
         current_record++; // edge case fix
+        loadPage(lastPage);
         while (page[current_record]->exists()) {
-            // TODO: handle reorganise
             next();
         }
+        lastPage = current_page;
         add(cyl->key, cyl->base, cyl->height, cyl->pointer);
         appended_pointer = recordToPointer(current_record, current_page);
         save(false);
@@ -280,11 +295,11 @@ bool Tape::insertAtOverflow(int pointer, Cylinder *cyl, Cylinder *mainTapeCylind
         // it is last record
         previous_pointer = next_pointer;
     }
-    // TODO: remember last page number
+    loadPage(lastPage);
     while (page[current_record]->exists()) {
-        // TODO: handle reorganise
         next();
     }
+    lastPage = current_page;
     add(cyl->key, cyl->base, cyl->height, cyl->pointer);
     appended_pointer = recordToPointer(current_record, current_page);
     save(false);

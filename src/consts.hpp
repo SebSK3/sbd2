@@ -3,7 +3,7 @@
 
 const double PI = 3.14159265;
 
-const double ALPHA = 0.5;
+const double ALPHA = 0.4;
 
 // Settings for storing records
 const uint BASE_LENGTH = 4;
@@ -18,7 +18,7 @@ const uint POINTER_LENGTH = 4;
 const uint RECORD_SIZE = KEY_LENGTH + BASE_LENGTH + HEIGHT_LENGTH + PAGE_NUMBER_LENGTH;
 
 // For this to work, PAGE_SIZE needs to be at least the size of RECORD_COUNT
-const long PAGE_SIZE = 64;
+const long PAGE_SIZE = 160;
 
 const int PAGE_RECORDS = PAGE_SIZE / RECORD_SIZE;
 

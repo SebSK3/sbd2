@@ -33,13 +33,31 @@ void Index::getFromFile() {
     cyl.base = 0;
     cyl.height = 0;
     cyl.pointer = 0;
+    double meanSaves = 0;
+    double meanLoads = 0;
+    bool empty = false;
+
     while (std::getline(file, line)) {
         std::istringstream iss(line);
         std::string operation;
         iss >> operation >> cyl.key >> cyl.base >> cyl.height;
+        tape->loads = 0;
+        tape->saves = 0;
+        tape->overflow->loads = 0;
+        tape->overflow->saves = 0;
         insert(&cyl);
+
+        if (meanSaves == 0) {
+            meanSaves = tape->saves+tape->overflow->saves;
+            meanLoads = tape->loads+tape->overflow->loads;
+        } else {
+            meanSaves = (meanSaves+tape->saves+tape->overflow->saves)/2;
+            meanLoads = (meanLoads+tape->loads+tape->overflow->loads)/2;
+        }
         cyl.pointer = 0;
     }
+    std::cout << "mean saves:" << meanSaves << std::endl;
+    std::cout << "mean loads:" << meanLoads << std::endl;
     file.close();
 }
 
@@ -62,18 +80,21 @@ void Index::insert(Cylinder *cyl) {
     goToStart();
     int key = cyl->key;
     index_t *record = page[current_record];
-    index_t lastRecord = *record;
+    index_t *lastRecord = record;
+    bool shouldUpdateIndex = false;
     while (!isAtFileEnd()) {
-        if (lastRecord.key <= key && key < record->key) {
+        if (lastRecord->key <= key && key < record->key) {
             break;
         }
-        lastRecord = *record;
+        lastRecord = record;
         record = next();
     }
-    tape->loadPage(lastRecord.page);
-    if (tape->insert(cyl)) {
+    tape->loadPage(lastRecord->page);
+    if (tape->insert(cyl, shouldUpdateIndex)) {
+        if (shouldUpdateIndex) lastRecord->key = cyl->key;
         reorganise(ALPHA);
     }
+    if (shouldUpdateIndex) lastRecord->key = cyl->key;
 }
 
 
@@ -222,6 +243,7 @@ void Index::reorganise(double alpha) {
     int currentPrimaryRecordOffset = 0;
 
     Cylinder *currentRecord;
+    bool empty = false;
     while (processedRecords != numberOfRecordsOverall) {
         if (!isInOverflow) {
             currentRecord = getByOffset(currentPrimaryRecordOffset);
@@ -243,7 +265,7 @@ void Index::reorganise(double alpha) {
         tempMainTape.loadPage(currentPage);
         int pointer = currentRecord->pointer;
         currentRecord->pointer = 0;
-        tempMainTape.insert(currentRecord);
+        tempMainTape.insert(currentRecord, empty);
         recordsOnCurrentPage++;
         processedRecords++;
         if (pointer == 0) {
@@ -256,6 +278,7 @@ void Index::reorganise(double alpha) {
             currentRecord = tape->overflow->getCurrentRecord();
         }
     }
+
     tempMainTape.numberOfPages = currentPage+1;
     tape->numberOfPages = tempMainTape.numberOfPages;
     tempMainTape.save();
@@ -263,6 +286,7 @@ void Index::reorganise(double alpha) {
     tape->overflow->fill();
     helpers::moveAfterReorganise();
     tape->overflow->numberOfOverflowRecords = 0;
+    tape->overflow->lastPage = 0;
     tape->numberOfRecords = numberOfRecordsOverall;
     tape->overflow->numberOfPages = ceil(amountOfPagesWithoutOverflow * 0.2);
     load();

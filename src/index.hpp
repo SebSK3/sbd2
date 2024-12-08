@@ -5,6 +5,7 @@
 #include "cylinder.hpp"
 #include "tape.hpp"
 
+#include <signal.h>
 #include <fstream>
 #include <iostream>
 #include <memory>
