@@ -46,6 +46,14 @@ void input(Index *index, Tape *tape) {
         if (input == "reorganise") {
             index->reorganise(ALPHA);
         }
+        if (input == "find") {
+            int keyToFind;
+            std::cin >> keyToFind;
+            Cylinder *record = index->find(keyToFind).first;
+            if (record != nullptr)
+            std::cout << record->key << ": " << record->base << " " << record->height << std::endl;
+            else std::cout << "NOT FOUND" << std::endl;
+        }
     }
 }
 

@@ -104,6 +104,7 @@ bool Tape::loadPage(int page) {
 }
 
 std::pair<Cylinder *, Position> Tape::find(int key) {
+    current_record = 0;
     Cylinder *record = page[current_record];
     Cylinder lastRecord = *record;
     Position pos;
@@ -111,8 +112,8 @@ std::pair<Cylinder *, Position> Tape::find(int key) {
     pos.index = current_record;
 
     while (!isAtFileEnd()) {
-        if (lastRecord.key <= key && key < record->key) {
-            if (lastRecord.key == key) {
+        if (lastRecord.key <= key && key <= record->key) {
+            if (record->key == key) {
 #ifdef DEBUG
                 std::cout << "[TAPE] Found at page: " << pos.page << " position: " << pos.index << std::endl;
 #endif
@@ -120,17 +121,20 @@ std::pair<Cylinder *, Position> Tape::find(int key) {
             } else {
                 // Key not found in main tape, find in overflow
                 if (lastRecord.pointer != 0) {
+                    std::cout << "Checking in overflow..." << std::endl;
                     return overflow->get(key, lastRecord.pointer);
                 }
             }
         }
+        if (isAtPageEnd() || !record->exists())
+            break;
+
         lastRecord = *record;
         pos.page = current_page;
         pos.index = current_record;
-        if (isAtPageEnd())
-            break;
         record = next();
     }
+
     if (!record->exists() || record->key != key) {
         record = nullptr;
     }
