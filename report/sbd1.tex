@@ -37,6 +37,16 @@
 \makeatother
 \usepackage{xcolor}
 \usepackage[margin=2cm]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -72,7 +82,7 @@
 
 \title{Sprawozdanie Struktury Baz Danych Projekt 1}
 \author{Sebastian Kwaśniak}
-\date{2024-12-08}
+\date{2024-12-09}
 
 \begin{document}
 \maketitle
@@ -97,6 +107,10 @@ Wylosowane przeze mnie typ rekordu to:
 Implementacja w języku C++. Przyjąłem, że jeden rekord jest podzielony
 na cztery liczby, rozmiar rekordu to 16 bajtów (4 bajty dla klucza, 4
 bajty dla podstawy, 4 bajty dla wysokości, 4 bajty dla wskaźnika).
+
+Zastosowałem optymalizację polegającą na nie alokowaniu całego obszaru
+indeksu na raz, rozmiar dostosowuje się do zajętości miejsca. Nie ma to
+wpływu na algorytm, a głównie na zajętość pamięci.
 
 \section{Opis struktury kodu}\label{opis-struktury-kodu}
 
@@ -191,7 +205,120 @@ TODO: przykładowe wyjście
 
 \section{Eksperyment}\label{eksperyment}
 
-Przeprowadzono eksperymenty na zasadzie wczytywania danych z pliku, dane
-użyte do testów są w folderze \texttt{tests}.
+Przeprowadzono eksperymenty na zasadzie wczytywania danych z pliku,
+gdzie zostało wygenerowanych 1000 operacji \texttt{insert}.
+
+\begin{itemize}
+\tightlist
+\item
+  Ilość rekordów przetrzymywanych w głównej taśmie przyjąłem jako 4
+\item
+  Rozmiar jednego rekordu w głównej taśmie lub obszarze przepełnienia to
+  16 bajtów
+\item
+  Rozmiar jednego rekordu w indeksie to 16 bajtów
+\end{itemize}
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0690}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1954}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2989}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3563}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0805}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+N
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+rozmiar indeksu
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+rozmiar obszaru głównego
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+rozmiar obszaru przepełnienia
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Suma
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+100 & 336 & 2688 & 256 & 3280 \\
+250 & 808 & 6464 & 768 & 8040 \\
+500 & 1856 & 14838 & 576 & 17270 \\
+1000 & 3200 & 25600 & 3200 & 32000 \\
+1500 & 5504 & 44032 & 1984 & 51520 \\
+\end{longtable}
+
+\includegraphics{sbd1_files/figure-latex/unnamed-chunk-2-1}
+
+Jak widzimy rozmiar plików rośnie liniowo. Do tego widać zależność
+rośnięcia plików blokowo.
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0795}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1932}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2955}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.3523}}
+  >{\centering\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.0795}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+alpha
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+rozmiar indeksu
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+rozmiar obszaru głównego
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+rozmiar obszaru przepełnienia
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+Suma
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0.3 & 2192 & 43840 & 2880 & 48912 \\
+0.4 & 1164 & 33280 & 2720 & 37164 \\
+0.5 & 1424 & 28480 & 1760 & 31664 \\
+0.6 & 1152 & 23040 & 2240 & 26432 \\
+0.7 & 1104 & 22080 & 640 & 23824 \\
+\end{longtable}
+
+\includegraphics{sbd1_files/figure-latex/unnamed-chunk-3-1}
+
+Widzimy, że spadek rozmiaru pliku jes gwałtowny pomiędzy
+\(\alpha=[0.3;0.4]\) oraz później tendencja jest w mniejszym stopniu. To
+znaczy, że reorganizacja tworzy mniej stron, przez co będą pełniejsze,
+ale reorganizacja będzie musiała następować częściej.
+
+W następnym eksperymencie, dla lepszego zobrazowania danych zmieniłem
+wielkość bloku na 10 rekordów.
+
+\begin{longtable}[]{@{}cccc@{}}
+\toprule\noalign{}
+alpha & śr. odczyty & śr. zapisy & Suma \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0.3 & 4.15 & 1.967 & 6.117 \\
+0.4 & 4.23 & 1.990 & 6.220 \\
+0.5 & 4.21 & 1.990 & 6.200 \\
+0.6 & 3.85 & 1.950 & 5.800 \\
+0.7 & 4.04 & 1.980 & 6.020 \\
+\end{longtable}
+
+\includegraphics{sbd1_files/figure-latex/unnamed-chunk-4-1}
+
+Widzimy że operacje oscylują w okolicy liczby \(6\). Zapisy zawsze są
+blisko \(2\), a odczyty blisko \(4\). Ilość odczytów głównie zależy od
+tego jak bardzo porozrzucane są następne elementy w łańcuchu
+przepełnień, na co głównie wpływ ma duża losowość.
+
+\section{Podsumowanie}\label{podsumowanie}
+
+Projekt pozwolił na zrozumienie organizacji indeksowej pliku i dlaczego
+indeksowanie pozwala znacząco przyspieszyć wszystkie typy operacji, oraz
+korzyści płynące z posiadania indeksu. Na bazie eksperymentów, można
+zuważyć zależności pomiędzy \(\alpha\) oraz wielkością pliku i ilością
+operacji.
 
 \end{document}

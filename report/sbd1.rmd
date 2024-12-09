@@ -96,10 +96,91 @@ TODO: przykładowe wyjście
 
 # Eksperyment
 
-Przeprowadzono eksperymenty na zasadzie wczytywania danych z pliku,
-dane użyte do testów są w folderze `tests`.
+Przeprowadzono eksperymenty na zasadzie wczytywania danych z pliku, gdzie zostało 
+wygenerowanych 1000 operacji `insert`.
 
 - Ilość rekordów przetrzymywanych w głównej taśmie przyjąłem jako 4
 - Rozmiar jednego rekordu w głównej taśmie lub obszarze przepełnienia to 16 bajtów
 - Rozmiar jednego rekordu w indeksie to 16 bajtów
 
+```{r, echo=FALSE}
+data <- read.csv("filesizes.csv", header = TRUE, check.names = FALSE)
+data$Suma <- (data$"rozmiar indeksu" + data$"rozmiar obszaru głównego" + data$"rozmiar obszaru przepełnienia")
+library(knitr)
+library(ggplot2)
+kable(data, align = "c")
+
+ggplot(data, aes(x = N, y = Suma)) +
+    geom_point(color = "blue", size = 3) +
+    geom_line(color = "red", linetype = "dashed") +
+    labs(
+        title = "Rozmiar pliku dla różnych ilości rekordów",
+        x = "N",
+        y = "Rozmiar pliku"
+    ) +
+    scale_y_continuous(labels = scales::label_comma()) +
+    theme_minimal()
+```
+
+Jak widzimy rozmiar plików rośnie liniowo. Do tego widać zależność rośnięcia plików blokowo.
+
+
+```{r, echo=FALSE}
+data <- read.csv("alpha.csv", header = TRUE, check.names = FALSE)
+data$Suma <- (data$"rozmiar indeksu" + data$"rozmiar obszaru głównego" + data$"rozmiar obszaru przepełnienia")
+library(knitr)
+library(latex2exp)
+library(ggplot2)
+kable(data, align = "c")
+
+ggplot(data, aes(x = alpha, y = Suma)) +
+    geom_point(color = "blue", size = 3) +
+    geom_line(color = "red", linetype = "dashed") +
+    labs(
+        title = TeX("Rozmiar pliku dla różnych $\\alpha$"),
+        x = TeX("$\\alpha$"),
+        y = "Rozmiar pliku"
+    ) +
+    scale_y_continuous(labels = scales::label_comma()) +
+    theme_minimal()
+```
+
+Widzimy, że spadek rozmiaru pliku jes gwałtowny pomiędzy $\alpha=[0.3;0.4]$
+oraz później tendencja jest w mniejszym stopniu. To znaczy, że reorganizacja tworzy mniej stron,
+przez co będą pełniejsze, ale reorganizacja będzie musiała następować częściej.
+
+
+W następnym eksperymencie, dla lepszego zobrazowania danych zmieniłem wielkość bloku na 10 rekordów.
+
+```{r, echo=FALSE}
+data <- read.csv("operations.csv", header = TRUE, check.names = FALSE)
+data$Suma <- (data$"śr. odczyty" + data$"śr. zapisy")
+library(knitr)
+library(latex2exp)
+library(ggplot2)
+kable(data, align = "c")
+
+ggplot(data, aes(x = alpha, y = Suma)) +
+    geom_point(color = "blue", size = 3) +
+    geom_line(color = "red", linetype = "dashed") +
+    labs(
+        title = TeX("Ilość operacji dla różnych $\\alpha$"),
+        x = TeX("$\\alpha$"),
+        y = "Ilość operacji"
+    ) +
+    scale_y_continuous(labels = scales::label_comma()) +
+    theme_minimal()
+```
+
+Widzimy że operacje oscylują w okolicy liczby $6$. Zapisy zawsze są blisko $2$,
+a odczyty blisko $4$. Ilość odczytów głównie zależy od
+tego jak bardzo porozrzucane są następne elementy
+w łańcuchu przepełnień, na co głównie wpływ ma duża losowość.
+
+# Podsumowanie
+
+Projekt pozwolił na zrozumienie organizacji indeksowej pliku i dlaczego
+indeksowanie pozwala znacząco przyspieszyć wszystkie typy operacji,
+oraz korzyści płynące z posiadania indeksu. Na bazie eksperymentów,
+można zuważyć zależności pomiędzy $\alpha$ oraz wielkością pliku i ilością
+operacji.
