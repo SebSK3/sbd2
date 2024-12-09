@@ -181,7 +181,18 @@ programu}\label{prezentacja-wynikuxf3w-programu}
 Po włączeniu programu użytkownikowi zostają pokazane wszystkie
 możliwości:
 
-TODO: przekopiować output tutaj
+\begin{verbatim}
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* Commands:
+* dump - print everything 
+* file - read tape from file (default name: input.txt)
+* insert <key> <base> <height> - insert to database 
+* reorganise - reorganise database
+* find <key> - find key in database
+* * * * * * * * * * * * * * * * * * * * *
+
+>  
+\end{verbatim}
 
 Głównie są to 2 komendy:
 
@@ -197,11 +208,18 @@ Głównie są to 2 komendy:
   \texttt{dump} - wypisanie całej bazy
 \item
   \texttt{reorganise} - reorganizacja całej bazy
+\item
+  \texttt{find\ \textless{}key\textgreater{}} - znajdź klucz w bazie
+  danych
 \end{itemize}
 
 Przykładowe wyjście z programu:
 
-TODO: przykładowe wyjście
+\begin{verbatim}
+> find 3
+[TAPE] Found at page: 0 position: 0
+3: 3 3  
+\end{verbatim}
 
 \section{Eksperyment}\label{eksperyment}
 

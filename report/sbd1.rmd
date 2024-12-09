@@ -81,7 +81,19 @@ je na kolejnyhc stronach (respektując $\alpha$)
 
 Po włączeniu programu użytkownikowi zostają pokazane wszystkie możliwości:
 
-TODO: przekopiować output tutaj
+```
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* Commands:
+* dump - print everything 
+* file - read tape from file (default name: input.txt)
+* insert <key> <base> <height> - insert to database 
+* reorganise - reorganise database
+* find <key> - find key in database
+* * * * * * * * * * * * * * * * * * * * *
+
+>  
+```
+
 
 Głównie są to 2 komendy:
 
@@ -89,10 +101,15 @@ Głównie są to 2 komendy:
 - `file` - wczytanie komend z pliku (domyślnie plik z nazwą `input.txt`)
 - `dump` - wypisanie całej bazy
 - `reorganise` - reorganizacja całej bazy
+- `find <key>` - znajdź klucz w bazie danych
 
 Przykładowe wyjście z programu:
 
-TODO: przykładowe wyjście
+```
+> find 3
+[TAPE] Found at page: 0 position: 0
+3: 3 3  
+```
 
 # Eksperyment
 

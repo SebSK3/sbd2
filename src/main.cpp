@@ -16,6 +16,7 @@ void help() {
                  "Commands:\n* dump - print everything "
                  "\n* file - read tape from file (default name: "
                  "input.txt)\n* insert <key> <base> <height> - insert to database \n* reorganise - reorganise database\n"
+                 "* find <key> - find key in database\n"
                  "* * * * * * * * * * * * * * * * * * * * *\n"
               << std::endl;
 }
