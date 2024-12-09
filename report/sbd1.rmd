@@ -3,7 +3,7 @@ header-includes:
     - \usepackage{needspace}
     - \usepackage{float}
     - \floatplacement{figure}{H}
-title: "Sprawozdanie Struktury Baz Danych Projekt 1"
+title: "Sprawozdanie Struktury Baz Danych Projekt 2"
 author: "Sebastian Kwaśniak"
 date: "`r Sys.Date()`"
 geometry: margin=2cm
@@ -84,14 +84,14 @@ Po włączeniu programu użytkownikowi zostają pokazane wszystkie możliwości:
 ```
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * Commands:
-* dump - print everything 
+* dump - print everything
 * file - read tape from file (default name: input.txt)
-* insert <key> <base> <height> - insert to database 
+* insert <key> <base> <height> - insert to database
 * reorganise - reorganise database
 * find <key> - find key in database
 * * * * * * * * * * * * * * * * * * * * *
 
->  
+>
 ```
 
 
@@ -108,12 +108,12 @@ Przykładowe wyjście z programu:
 ```
 > find 3
 [TAPE] Found at page: 0 position: 0
-3: 3 3  
+3: 3 3
 ```
 
 # Eksperyment
 
-Przeprowadzono eksperymenty na zasadzie wczytywania danych z pliku, gdzie zostało 
+Przeprowadzono eksperymenty na zasadzie wczytywania danych z pliku, gdzie zostało
 wygenerowanych 1000 operacji `insert`.
 
 - Ilość rekordów przetrzymywanych w głównej taśmie przyjąłem jako 4
